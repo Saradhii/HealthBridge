@@ -1,8 +1,0 @@
-seed
-drizzle
-.env
-.env.local
-.env.*.local
-bun.lock
-*.sql
-scripts
