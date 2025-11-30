@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { Checkbox } from '@/components/ui/checkbox'
+import { DatePicker } from '@/components/ui/date-picker'
 import { type Patient } from '../data/schema'
 import { apiClient } from '@/lib/api'
 import { toast } from 'sonner'
@@ -35,7 +36,9 @@ const formSchema = z.object({
   lastName: z.string().min(1, 'Last Name is required.'),
   email: z.string().email().or(z.literal('')).optional(),
   phone: z.string().min(1, 'Phone number is required.'),
-  dateOfBirth: z.string().min(1, 'Date of birth is required.'),
+  dateOfBirth: z.date({
+    required_error: 'Date of birth is required.',
+  }),
   gender: z.enum(['male', 'female', 'other']),
   bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional().or(z.literal('')),
   address: z.string().optional(),
@@ -91,7 +94,7 @@ export function PatientActionDialog({
           lastName: currentRow.lastName,
           email: currentRow.email || '',
           phone: currentRow.phone,
-          dateOfBirth: format(currentRow.dateOfBirth, 'yyyy-MM-dd'),
+          dateOfBirth: currentRow.dateOfBirth,
           gender: currentRow.gender,
           bloodGroup: currentRow.bloodGroup || '',
           address: currentRow.address || '',
@@ -110,7 +113,7 @@ export function PatientActionDialog({
           lastName: '',
           email: '',
           phone: '',
-          dateOfBirth: '',
+          dateOfBirth: undefined,
           bloodGroup: '',
           address: '',
           city: '',
@@ -200,11 +203,14 @@ export function PatientActionDialog({
                   name='firstName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>First Name</FormLabel>
+                      <FormLabel>
+                        First Name <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder='John'
                           autoComplete='off'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -218,11 +224,14 @@ export function PatientActionDialog({
                   name='lastName'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Last Name</FormLabel>
+                      <FormLabel>
+                        Last Name <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder='Doe'
                           autoComplete='off'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -242,6 +251,7 @@ export function PatientActionDialog({
                           type='email'
                           placeholder='john.doe@example.com'
                           autoComplete='off'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -255,10 +265,13 @@ export function PatientActionDialog({
                   name='phone'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Phone Number</FormLabel>
+                      <FormLabel>
+                        Phone Number <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
                         <Input
                           placeholder='+123456789'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -272,11 +285,14 @@ export function PatientActionDialog({
                   name='dateOfBirth'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Date of Birth</FormLabel>
+                      <FormLabel>
+                        Date of Birth <span className="text-destructive">*</span>
+                      </FormLabel>
                       <FormControl>
-                        <Input
-                          type='date'
-                          {...field}
+                        <DatePicker
+                          value={field.value}
+                          onChange={field.onChange}
+                          disabled={isLoading}
                         />
                       </FormControl>
                       <FormMessage />
@@ -289,11 +305,12 @@ export function PatientActionDialog({
                   name='gender'
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Gender</FormLabel>
+                      <FormLabel>
+                        Gender <span className="text-destructive">*</span>
+                      </FormLabel>
                       <SelectDropdown
                         defaultValue={field.value}
                         onValueChange={field.onChange}
-                        placeholder='Select gender'
                         items={genders}
                       />
                       <FormMessage />
@@ -310,8 +327,8 @@ export function PatientActionDialog({
                       <SelectDropdown
                         defaultValue={field.value}
                         onValueChange={field.onChange}
-                        placeholder='Select blood group'
                         items={bloodGroups}
+                        disabled={isLoading}
                       />
                       <FormMessage />
                     </FormItem>
@@ -333,6 +350,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='123 Main St'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -350,6 +368,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='New York'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -367,6 +386,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='NY'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -384,6 +404,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='10001'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -401,6 +422,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='USA'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -424,6 +446,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='Jane Doe'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -441,6 +464,7 @@ export function PatientActionDialog({
                       <FormControl>
                         <Input
                           placeholder='+123456789'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -465,6 +489,7 @@ export function PatientActionDialog({
                         <Textarea
                           placeholder='List any known allergies...'
                           className='min-h-[80px]'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
@@ -483,6 +508,7 @@ export function PatientActionDialog({
                         <Textarea
                           placeholder='List any chronic conditions...'
                           className='min-h-[80px]'
+                          disabled={isLoading}
                           {...field}
                         />
                       </FormControl>
