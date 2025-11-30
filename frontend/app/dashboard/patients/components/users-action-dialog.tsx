@@ -23,8 +23,14 @@ import {
 import { Input } from '@/components/ui/input'
 import { PasswordInput } from '@/components/password-input'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { roles } from '../data/data'
-import { type User } from '../data/schema'
+import { type User } from '@/lib/types'
+
+const roles = [
+  { label: 'Admin', value: 'admin' },
+  { label: 'Doctor', value: 'doctor' },
+  { label: 'Nurse', value: 'nurse' },
+  { label: 'Receptionist', value: 'receptionist' },
+] as const
 
 const formSchema = z
   .object({

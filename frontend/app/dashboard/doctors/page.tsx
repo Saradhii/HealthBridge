@@ -10,7 +10,7 @@ import { apiClient } from '@/lib/api'
 import { type User, type GetUsersResponse } from '@/lib/types'
 
 export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<User[]>([])
+  const [doctors, setDoctors] = useState<any[]>([])
   const [pagination, setPagination] = useState<GetUsersResponse['pagination']>({
     page: 1,
     limit: 10,
@@ -39,7 +39,7 @@ export default function DoctorsPage() {
         department: user.department || undefined,
         specialization: user.specialization || undefined,
         shift: user.shift || undefined,
-        tenantId: user.tenantId || '',
+        tenantId: '', // Default empty string for now
         roles: user.roles?.map(role => role.name || role.slug || '') || [],
         forcePasswordChange: user.forcePasswordChange,
       }))

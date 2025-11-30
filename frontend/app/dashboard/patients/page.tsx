@@ -68,7 +68,7 @@ export default function PatientsPage() {
         search: params.search !== undefined ? params.search : currentFilters.search,
         gender: params.gender !== undefined ? params.gender : currentFilters.gender,
         bloodGroup: params.bloodGroup !== undefined ? params.bloodGroup : currentFilters.bloodGroup,
-        isActive: params.isActive !== undefined ? params.isActive : (currentFilters.isActive === '' ? undefined : currentFilters.isActive === 'true'),
+        isActive: params.isActive !== undefined ? (params.isActive === 'true' ? true : params.isActive === 'false' ? false : undefined) : (currentFilters.isActive === '' ? undefined : currentFilters.isActive === 'true'),
         sortBy: params.sortBy !== undefined ? params.sortBy : currentFilters.sortBy,
         sortOrder: params.sortOrder !== undefined ? params.sortOrder : currentFilters.sortOrder,
       }
@@ -86,8 +86,6 @@ export default function PatientsPage() {
       setPatients(transformedPatients)
       setPagination(prev => ({
         ...prev,
-        page: requestParams.page,
-        limit: requestParams.limit,
         ...response.pagination
       }))
     } catch (err) {

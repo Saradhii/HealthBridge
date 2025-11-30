@@ -36,9 +36,7 @@ const formSchema = z.object({
   email: z.string().email().or(z.literal('')).optional(),
   phone: z.string().min(1, 'Phone number is required.'),
   dateOfBirth: z.string().min(1, 'Date of birth is required.'),
-  gender: z.enum(['male', 'female', 'other'], {
-    required_error: 'Please select a gender.',
-  }),
+  gender: z.enum(['male', 'female', 'other']),
   bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional().or(z.literal('')),
   address: z.string().optional(),
   city: z.string().optional(),
@@ -86,7 +84,7 @@ export function PatientActionDialog({
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<PatientForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: isEdit
       ? {
           firstName: currentRow.firstName,
@@ -293,7 +291,7 @@ export function PatientActionDialog({
                     <FormItem>
                       <FormLabel>Gender</FormLabel>
                       <SelectDropdown
-                        value={field.value}
+                        defaultValue={field.value}
                         onValueChange={field.onChange}
                         placeholder='Select gender'
                         items={genders}
@@ -310,7 +308,7 @@ export function PatientActionDialog({
                     <FormItem>
                       <FormLabel>Blood Group</FormLabel>
                       <SelectDropdown
-                        value={field.value}
+                        defaultValue={field.value}
                         onValueChange={field.onChange}
                         placeholder='Select blood group'
                         items={bloodGroups}

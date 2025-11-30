@@ -1,6 +1,6 @@
 'use client'
 
-import { Link } from 'next/navigation'
+import Link from 'next/link'
 import { FileX, Home, ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ContentSection } from './settings/components/content-section'

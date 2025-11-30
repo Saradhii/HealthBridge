@@ -41,7 +41,7 @@ export function UsersDeleteDialog({
   }
 
   const patientName = `${currentRow.firstName} ${currentRow.lastName}`
-  const patientInfo = `${currentRow.age} years old, ${currentRow.gender}${currentRow.bloodGroup ? ` - Blood Group: ${currentRow.bloodGroup}` : ''}`
+  const patientInfo = `${currentRow.gender}${currentRow.bloodGroup ? ` - Blood Group: ${currentRow.bloodGroup}` : ''}`
 
   return (
     <ConfirmDialog

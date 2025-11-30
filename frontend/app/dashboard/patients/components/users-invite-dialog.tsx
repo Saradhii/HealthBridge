@@ -25,7 +25,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { SelectDropdown } from '@/components/select-dropdown'
-import { roles } from '../data/data'
+import { roles } from '../../users/data/data'
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),

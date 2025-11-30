@@ -29,6 +29,15 @@ import { patientsColumns as columns } from './patients-columns'
 import { UsersTableSkeleton } from './users-table-skeleton'
 import { genders, bloodGroups, statuses } from '../data/data'
 
+interface PatientsFilters {
+  search: string;
+  gender: string;
+  bloodGroup: string;
+  isActive: string;
+  sortBy: string;
+  sortOrder: 'asc' | 'desc';
+}
+
 type DataTableProps = {
   data: Patient[]
   pagination: GetPatientsResponse['pagination']
@@ -36,15 +45,8 @@ type DataTableProps = {
   onPageSizeChange: (pageSize: number) => void
   onSortChange: (sortBy: string, sortOrder: 'asc' | 'desc') => void
   isLoading?: boolean
-  filters: {
-    search: string;
-    gender: string;
-    bloodGroup: string;
-    isActive: string;
-    sortBy: string;
-    sortOrder: 'asc' | 'desc';
-  }
-  updateFilters: (filters: Partial<typeof filters>) => void
+  filters: PatientsFilters
+  updateFilters: (filters: Partial<PatientsFilters>) => void
   resetFilters: () => void
 }
 
