@@ -26,12 +26,6 @@ export default function EditRolePage() {
   const [role, setRole] = useState<Role | null>(null)
   const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (roleId) {
-      fetchRole()
-    }
-  }, [roleId, fetchRole])
-
   const fetchRole = useCallback(async () => {
     try {
       setLoading(true)
@@ -51,6 +45,12 @@ export default function EditRolePage() {
       setLoading(false)
     }
   }, [roleId, router])
+
+  useEffect(() => {
+    if (roleId) {
+      fetchRole()
+    }
+  }, [roleId, fetchRole])
 
   if (loading) {
     return <EditRolePageSkeleton />

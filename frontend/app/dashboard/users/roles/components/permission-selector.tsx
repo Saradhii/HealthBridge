@@ -104,8 +104,8 @@ export function PermissionSelector({ selectedPermissions, onChange }: Permission
                 <Checkbox
                   id={`resource-${perm.resource}`}
                   checked={areAllActionsSelected(perm.resource, perm.actions)}
-                  indeterminate={areSomeActionsSelected(perm.resource, perm.actions)}
                   onCheckedChange={() => toggleAllActions(perm.resource, perm.actions)}
+                  {...(areSomeActionsSelected(perm.resource, perm.actions) ? { 'data-state': 'indeterminate' } : {})}
                 />
                 <Label
                   htmlFor={`resource-${perm.resource}`}

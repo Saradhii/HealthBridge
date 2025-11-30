@@ -52,7 +52,7 @@ export function WardActionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<WardForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: isEdit
       ? {
           name: currentWard.name,

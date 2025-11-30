@@ -7,7 +7,8 @@ import { UsersProvider } from './components/users-provider'
 import { UsersTable } from './components/users-table'
 import { UsersTableSkeleton } from './components/users-table-skeleton'
 import { apiClient } from '@/lib/api'
-import { type User, type GetUsersResponse } from '@/lib/types'
+import { type GetUsersResponse } from '@/lib/types'
+import { type User } from './data/schema'
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])

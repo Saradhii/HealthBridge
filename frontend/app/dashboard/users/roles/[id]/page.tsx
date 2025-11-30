@@ -141,7 +141,7 @@ export default function RoleDetailsPage() {
             <Button
               variant='destructive'
               onClick={() => setShowDeleteDialog(true)}
-              disabled={role.userCount && role.userCount > 0}
+              disabled={Boolean(role.userCount && role.userCount > 0)}
             >
               <Trash2 className='mr-2 h-4 w-4' />
               Delete Role
