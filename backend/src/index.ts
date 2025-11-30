@@ -23,3 +23,6 @@ app.route('/api/appointments', appointmentsRouter);
 app.route('/api/wards', wardsRouter);
 
 export default app;
+
+// auto-added so vercel-entry can import { app }
+export { app as app };
