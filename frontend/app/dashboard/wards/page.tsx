@@ -25,13 +25,17 @@ export default function WardsPage() {
       // Transform backend data to frontend schema
       const transformedWards: Ward[] = response.wards.map((ward: WardFromDB) => ({
         id: ward.id,
+        tenantId: ward.tenantId,
         name: ward.name,
-        department: ward.department || undefined,
-        floor: ward.floor || undefined,
+        department: ward.department || null,
+        floor: ward.floor || null,
         totalBeds: ward.totalBeds,
         occupiedBeds: ward.occupiedBeds,
+        createdAt: new Date(ward.createdAt),
+        updatedAt: new Date(ward.updatedAt),
         rooms: ward.rooms.map(room => ({
           id: room.id,
+          wardId: room.wardId,
           roomNumber: room.roomNumber,
           bedType: room.bedType,
           status: room.status,
@@ -41,8 +45,10 @@ export default function WardsPage() {
             checkIn: new Date(room.currentPatient.checkIn),
             expectedCheckOut: room.currentPatient.expectedCheckOut
               ? new Date(room.currentPatient.expectedCheckOut)
-              : undefined,
-          } : undefined,
+              : null,
+          } : null,
+          createdAt: new Date(room.createdAt),
+          updatedAt: new Date(room.updatedAt),
         })),
       }))
 

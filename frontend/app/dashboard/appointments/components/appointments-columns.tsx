@@ -1,6 +1,14 @@
 'use client'
 
 import { type ColumnDef } from '@tanstack/react-table'
+
+declare module '@tanstack/react-table' {
+  interface ColumnMeta<TData, TValue> {
+    className?: string
+    thClassName?: string
+    tdClassName?: string
+  }
+}
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'

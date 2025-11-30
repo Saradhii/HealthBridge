@@ -29,7 +29,7 @@ export default function HelpPage() {
           </AccordionTrigger>
           <AccordionContent className='text-muted-foreground space-y-3'>
             <p>
-              HealthBridge is your comprehensive hospital management system. The dashboard provides an at-a-glance view of your hospital's key metrics and activities.
+              HealthBridge is your comprehensive hospital management system. The dashboard provides an at-a-glance view of your hospital&apos;s key metrics and activities.
             </p>
             <ul className='list-disc pl-6 space-y-2'>
               <li>Monitor real-time statistics including patient count, appointments, and bed occupancy</li>
@@ -56,7 +56,7 @@ export default function HelpPage() {
               <h4 className='font-medium text-foreground'>To add a new patient:</h4>
               <ol className='list-decimal pl-6 space-y-1'>
                 <li>Navigate to the Patients page</li>
-                <li>Click the "Add Patient" button</li>
+                <li>Click the &quot;Add Patient&quot; button</li>
                 <li>Fill in the required information including personal details, medical history, and contact information</li>
                 <li>Save the patient record</li>
               </ol>
@@ -86,7 +86,7 @@ export default function HelpPage() {
               <h4 className='font-medium text-foreground'>Scheduling appointments:</h4>
               <ol className='list-decimal pl-6 space-y-1'>
                 <li>Go to the Appointments page</li>
-                <li>Click "Schedule New Appointment"</li>
+                <li>Click &quot;Schedule New Appointment&quot;</li>
                 <li>Select patient, doctor, date, and time slot</li>
                 <li>Add appointment notes or special requirements</li>
                 <li>Confirm the appointment</li>
@@ -117,7 +117,7 @@ export default function HelpPage() {
               <h4 className='font-medium text-foreground'>Adding new users:</h4>
               <ol className='list-decimal pl-6 space-y-1'>
                 <li>Navigate to Users section</li>
-                <li>Click "Invite User" or "Add User"</li>
+                <li>Click &quot;Invite User&quot; or &quot;Add User&quot;</li>
                 <li>Enter user details and email address</li>
                 <li>Assign appropriate role and permissions</li>
                 <li>Send invitation to set up their account</li>
@@ -130,7 +130,7 @@ export default function HelpPage() {
                 <li><strong>Doctor:</strong> Manage patients, view appointments, access medical records</li>
                 <li><strong>Nurse:</strong> Update patient status, manage daily care tasks</li>
                 <li><strong>Receptionist:</strong> Schedule appointments, manage patient registrations</li>
-                <li>Customize permissions based on your hospital's structure</li>
+                <li>Customize permissions based on your hospital&apos;s structure</li>
               </ul>
             </div>
           </AccordionContent>
@@ -166,7 +166,7 @@ export default function HelpPage() {
               </ol>
             </div>
             <p className='text-sm'>
-              Tip: Schedule automated weekly or monthly reports to stay informed about your hospital's performance.
+              Tip: Schedule automated weekly or monthly reports to stay informed about your hospital&apos;s performance.
             </p>
           </AccordionContent>
         </AccordionItem>

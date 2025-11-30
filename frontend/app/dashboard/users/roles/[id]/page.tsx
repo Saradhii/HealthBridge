@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { ArrowLeft, Pencil, Trash2, Shield, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -43,13 +43,7 @@ export default function RoleDetailsPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [deleting, setDeleting] = useState(false)
 
-  useEffect(() => {
-    if (roleId) {
-      fetchRoleDetails()
-    }
-  }, [roleId])
-
-  const fetchRoleDetails = async () => {
+  const fetchRoleDetails = useCallback(async () => {
     try {
       setLoading(true)
       const response = await apiClient.getRole(roleId)
@@ -60,8 +54,15 @@ export default function RoleDetailsPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [roleId, router])
 
+  useEffect(() => {
+    if (roleId) {
+      fetchRoleDetails()
+    }
+  }, [roleId, fetchRoleDetails])
+
+  
   const handleDelete = async () => {
     if (!role) return
 
@@ -242,7 +243,7 @@ export default function RoleDetailsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete the role "{role.name}". This action cannot be undone.
+              This will permanently delete the role &quot;{role.name}&quot;. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

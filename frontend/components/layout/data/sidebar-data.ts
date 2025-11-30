@@ -16,6 +16,7 @@ import {
   BedDouble,
   Syringe,
   UsersRound,
+  Wrench,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 
@@ -67,24 +68,9 @@ export const sidebarData: SidebarData = {
           icon: Stethoscope,
         },
         {
-          title: 'Prescriptions',
-          url: '/dashboard/prescriptions',
-          icon: Pill,
-        },
-        {
-          title: 'Lab Results',
-          url: '/dashboard/lab-results',
-          icon: ClipboardList,
-        },
-        {
           title: 'Wards & Beds',
           url: '/dashboard/wards',
           icon: BedDouble,
-        },
-        {
-          title: 'Procedures',
-          url: '/dashboard/procedures',
-          icon: Syringe,
         },
       ],
     },
@@ -116,6 +102,26 @@ export const sidebarData: SidebarData = {
           title: 'Help Center',
           url: '/dashboard/help',
           icon: HelpCircle,
+        },
+      ],
+    },
+    {
+      title: 'Under Development',
+      items: [
+        {
+          title: 'Prescriptions',
+          url: '/dashboard/prescriptions',
+          icon: Pill,
+        },
+        {
+          title: 'Lab Results',
+          url: '/dashboard/lab-results',
+          icon: ClipboardList,
+        },
+        {
+          title: 'Procedures',
+          url: '/dashboard/procedures',
+          icon: Syringe,
         },
       ],
     },

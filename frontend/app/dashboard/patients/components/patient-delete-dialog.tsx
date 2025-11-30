@@ -41,7 +41,7 @@ export function PatientDeleteDialog({
       setIsLoading(true)
       await apiClient.deletePatient(currentRow.id)
 
-      toast.success(`Patient "${currentRow.firstName} ${currentRow.lastName}" deleted successfully`)
+      toast.success(`Patient &quot;${currentRow.firstName} ${currentRow.lastName}&quot; deleted successfully`)
       onOpenChange(false)
 
       // Trigger a refresh by emitting a custom event
@@ -67,7 +67,7 @@ export function PatientDeleteDialog({
         <DialogHeader>
           <DialogTitle>Confirm Deletion</DialogTitle>
           <DialogDescription>
-            Are you sure you want to delete patient "{currentRow?.firstName} {currentRow?.lastName}"?
+            Are you sure you want to delete patient &quot;{currentRow?.firstName} {currentRow?.lastName}&quot;?
             This action cannot be undone.
           </DialogDescription>
         </DialogHeader>

@@ -15,78 +15,51 @@ export default function LogoCloud() {
                             speed={40}
                             gap={112}>
                             <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nvidia.svg"
-                                    alt="Nvidia Logo"
-                                    height="20"
-                                    width="auto"
-                                />
+                                <span className="mx-auto text-lg font-semibold text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    All India Institute of Medical Sciences
+                                </span>
                             </div>
 
                             <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/column.svg"
-                                    alt="Column Logo"
-                                    height="16"
-                                    width="auto"
-                                />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/github.svg"
-                                    alt="GitHub Logo"
-                                    height="16"
-                                    width="auto"
-                                />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/nike.svg"
-                                    alt="Nike Logo"
-                                    height="20"
-                                    width="auto"
-                                />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-5 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lemonsqueezy.svg"
-                                    alt="Lemon Squeezy Logo"
-                                    height="20"
-                                    width="auto"
-                                />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-4 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/laravel.svg"
-                                    alt="Laravel Logo"
-                                    height="16"
-                                    width="auto"
-                                />
-                            </div>
-                            <div className="flex">
-                                <img
-                                    className="mx-auto h-7 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/lilly.svg"
-                                    alt="Lilly Logo"
-                                    height="28"
-                                    width="auto"
-                                />
+                                <span className="mx-auto text-lg font-semibold text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Apollo Hospitals
+                                </span>
                             </div>
 
                             <div className="flex">
-                                <img
-                                    className="mx-auto h-6 w-fit dark:invert"
-                                    src="https://html.tailus.io/blocks/customers/openai.svg"
-                                    alt="OpenAI Logo"
-                                    height="24"
-                                    width="auto"
-                                />
+                                <span className="mx-auto text-base font-medium text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Medanta
+                                </span>
+                            </div>
+
+                            <div className="flex">
+                                <span className="mx-auto text-lg font-semibold text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Fortis Healthcare
+                                </span>
+                            </div>
+
+                            <div className="flex">
+                                <span className="mx-auto text-base font-medium text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Tata Memorial Hospital
+                                </span>
+                            </div>
+
+                            <div className="flex">
+                                <span className="mx-auto text-lg font-semibold text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Max Healthcare
+                                </span>
+                            </div>
+
+                            <div className="flex">
+                                <span className="mx-auto text-lg font-bold text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Lilavati Hospital
+                                </span>
+                            </div>
+
+                            <div className="flex">
+                                <span className="mx-auto text-lg font-medium text-muted-foreground/80 dark:text-muted-foreground/60">
+                                    Kokilaben Hospital
+                                </span>
                             </div>
                         </InfiniteSlider>
 

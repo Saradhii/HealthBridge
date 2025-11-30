@@ -69,7 +69,7 @@ export function DoctorsActionDialog({
       department: currentRow?.department || '',
       specialization: currentRow?.specialization || '',
       shift: currentRow?.shift || '',
-      isActive: currentRow?.status === 'active' ?? true,
+      isActive: currentRow?.status === 'active' ? true : true,
       emailVerified: true,
       forcePasswordChange: false,
     },

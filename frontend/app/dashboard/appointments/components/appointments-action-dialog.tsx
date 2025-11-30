@@ -110,12 +110,14 @@ export function AppointmentsActionDialog({
         await apiClient.updateAppointment(currentRow.id, {
           ...values,
           appointmentDate,
+          type: values.type as 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic',
         })
         toast.success('Appointment updated successfully')
       } else {
         await apiClient.createAppointment({
           ...values,
           appointmentDate,
+          type: values.type as 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic',
         })
         toast.success('Appointment created successfully')
       }

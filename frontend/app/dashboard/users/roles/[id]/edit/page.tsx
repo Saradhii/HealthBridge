@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Skeleton } from '@/components/ui/skeleton'
 import { apiClient } from '@/lib/api'
@@ -30,9 +30,9 @@ export default function EditRolePage() {
     if (roleId) {
       fetchRole()
     }
-  }, [roleId])
+  }, [roleId, fetchRole])
 
-  const fetchRole = async () => {
+  const fetchRole = useCallback(async () => {
     try {
       setLoading(true)
       const response = await apiClient.getRole(roleId)
@@ -50,7 +50,7 @@ export default function EditRolePage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [roleId, router])
 
   if (loading) {
     return <EditRolePageSkeleton />

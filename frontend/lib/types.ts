@@ -255,12 +255,12 @@ export interface AppointmentFromDB {
   id: string;
   tenantId: string;
   patientId: string;
-  appointmentDate: string;
+  appointmentDate: Date;
   status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
-  type: string;
+  type: 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic';
   notes: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
   patient: {
     id: string;
     firstName: string;
@@ -289,7 +289,7 @@ export interface GetAppointmentsResponse {
 export interface CreateAppointmentRequest {
   patientId: string;
   appointmentDate: string;
-  type: string;
+  type: 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic';
   status?: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
   notes?: string | null;
 }
@@ -297,7 +297,7 @@ export interface CreateAppointmentRequest {
 export interface UpdateAppointmentRequest {
   patientId?: string;
   appointmentDate?: string;
-  type?: string;
+  type?: 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic';
   status?: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
   notes?: string | null;
 }
