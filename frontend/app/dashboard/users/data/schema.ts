@@ -12,6 +12,11 @@ const roleSchema = z.object({
   slug: z.string(),
 })
 
+const roleWithStringIdSchema = z.union([
+  z.string(),
+  roleSchema
+])
+
 const userSchema = z.object({
   id: z.string(),
   email: z.string(),
@@ -27,6 +32,8 @@ const userSchema = z.object({
   roles: z.array(roleSchema),
   // Derived field for UI
   status: userStatusSchema,
+  // Optional fields from API that may not be needed in UI
+  tenantId: z.string().optional(),
 })
 export type User = z.infer<typeof userSchema>
 

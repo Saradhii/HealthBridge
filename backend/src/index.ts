@@ -22,13 +22,4 @@ app.route('/api/patients', patientsRouter);
 app.route('/api/appointments', appointmentsRouter);
 app.route('/api/wards', wardsRouter);
 
-const port = process.env.PORT || 8080;
-
-// Export for Vercel
 export default app;
-
-// For Bun runtime
-export const config = {
-  port,
-  fetch: app.fetch,
-};

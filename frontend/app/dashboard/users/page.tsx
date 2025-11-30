@@ -32,11 +32,21 @@ export default function UsersPage() {
 
       // Transform API response to match UI schema
       const transformedUsers: User[] = response.users.map((user) => ({
-        ...user,
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        department: user.department || undefined,
+        specialization: user.specialization || undefined,
+        shift: user.shift || undefined,
+        isActive: user.isActive,
+        emailVerified: user.emailVerified,
+        forcePasswordChange: user.forcePasswordChange,
         createdAt: new Date(user.createdAt),
         updatedAt: new Date(user.updatedAt),
+        roles: user.roles,
         status: user.isActive ? ('active' as const) : ('inactive' as const),
-      }))
+        tenantId: (user as any).tenantId,
+      } as unknown as User))
 
       setUsers(transformedUsers)
       setPagination(response.pagination)

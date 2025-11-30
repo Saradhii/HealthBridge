@@ -86,14 +86,14 @@ export function UsersActionDialog({
   const { roles, isLoading: rolesLoading, error: rolesError } = useRoles()
 
   const form = useForm<UserForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: currentRow?.name || '',
       email: currentRow?.email || '',
       department: currentRow?.department || '',
       specialization: currentRow?.specialization || '',
       shift: currentRow?.shift || '',
-      isActive: currentRow?.status === 'active' ?? true,
+      isActive: currentRow?.status === 'active' ? true : true,
       emailVerified: true,
       forcePasswordChange: false,
       roleIds: currentRow?.roles.map(r => r.id) || [],
@@ -251,7 +251,11 @@ export function UsersActionDialog({
                           placeholder='Select or enter department'
                           list='departments'
                           autoComplete='off'
-                          {...field}
+                          value={field.value || ''}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                          ref={field.ref}
                         />
                         <datalist id='departments'>
                           {departmentsList.map((dept) => (
@@ -277,7 +281,11 @@ export function UsersActionDialog({
                         placeholder='e.g., Cardiology, Pediatric Nursing, Clinical Pharmacy'
                         className='resize-none'
                         rows={2}
-                        {...field}
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        name={field.name}
+                        ref={field.ref}
                       />
                     </FormControl>
                     <FormMessage />
@@ -293,7 +301,7 @@ export function UsersActionDialog({
                   <FormItem>
                     <FormLabel>Shift</FormLabel>
                     <SelectDropdown
-                      defaultValue={field.value}
+                      defaultValue={field.value || ''}
                       onValueChange={field.onChange}
                       placeholder='Select shift'
                       items={shiftsList.map((shift) => ({
@@ -326,13 +334,14 @@ export function UsersActionDialog({
                             <input
                               type='checkbox'
                               id={role.id}
-                              checked={field.value.includes(role.id)}
+                              checked={(field.value || []).includes(role.id)}
                               onChange={(e) => {
+                                const currentValue = field.value || []
                                 if (e.target.checked) {
-                                  field.onChange([...field.value, role.id])
+                                  field.onChange([...currentValue, role.id])
                                 } else {
                                   field.onChange(
-                                    field.value.filter((val) => val !== role.id)
+                                    currentValue.filter((val) => val !== role.id)
                                   )
                                 }
                               }}
