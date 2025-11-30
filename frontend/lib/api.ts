@@ -40,6 +40,9 @@ import type {
   AssignPatientResponse,
   DischargePatientRequest,
   DischargePatientResponse,
+  DashboardStats,
+  MonthlyStatsResponse,
+  RecentAdmissionsResponse,
 } from './types';
 import { useAuthStore } from './store/auth';
 
@@ -536,6 +539,19 @@ class ApiClient {
       method: 'POST',
       body: JSON.stringify(data || {}),
     });
+  }
+
+  // Dashboard APIs
+  async getDashboardStats(): Promise<DashboardStats> {
+    return this.authenticatedRequest<DashboardStats>('/api/dashboard/stats');
+  }
+
+  async getMonthlyStats(): Promise<MonthlyStatsResponse> {
+    return this.authenticatedRequest<MonthlyStatsResponse>('/api/dashboard/monthly-stats');
+  }
+
+  async getRecentAdmissions(): Promise<RecentAdmissionsResponse> {
+    return this.authenticatedRequest<RecentAdmissionsResponse>('/api/dashboard/recent-admissions');
   }
 }
 

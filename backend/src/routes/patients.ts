@@ -14,7 +14,7 @@ const createPatientSchema = z.object({
   lastName: z.string().min(1),
   email: z.string().email().optional().nullable(),
   phone: z.string().min(1),
-  dateOfBirth: z.string().datetime(),
+  dateOfBirth: z.string().date(),
   gender: z.enum(['male', 'female', 'other']),
   bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional().nullable(),
   address: z.string().optional().nullable(),
@@ -34,7 +34,7 @@ const updatePatientSchema = z.object({
   lastName: z.string().min(1).optional(),
   email: z.string().email().optional().nullable(),
   phone: z.string().min(1).optional(),
-  dateOfBirth: z.string().datetime().optional(),
+  dateOfBirth: z.string().date().optional(),
   gender: z.enum(['male', 'female', 'other']).optional(),
   bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional().nullable(),
   address: z.string().optional().nullable(),
@@ -198,7 +198,7 @@ patientsRouter.post('/', requirePermission('PATIENT', 'CREATE'), async (c) => {
 
     return c.json({ patient }, 201);
   } catch (error) {
-    return c.json({ error: 'Failed to create patient' }, 500);
+    return c.json({ error: error }, 500);
   }
 });
 

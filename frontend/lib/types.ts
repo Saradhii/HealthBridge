@@ -437,3 +437,45 @@ export interface DischargePatientResponse {
   message: string;
   room: RoomFromDB;
 }
+
+// Dashboard Types
+export interface DashboardStats {
+  totalPatients: number;
+  todayAppointments: {
+    total: number;
+    completed: number;
+    pending: number;
+  };
+  bedOccupancy: {
+    total: number;
+    occupied: number;
+    percentage: number;
+  };
+  staffOnDuty: {
+    total: number;
+    doctors: number;
+    nurses: number;
+  };
+}
+
+export interface MonthlyStatsData {
+  name: string;
+  total: number;
+}
+
+export interface MonthlyStatsResponse {
+  data: MonthlyStatsData[];
+}
+
+export interface RecentAdmission {
+  id: string;
+  patientName: string;
+  ward: string;
+  department: string;
+  checkIn: string;
+  bedType: string;
+}
+
+export interface RecentAdmissionsResponse {
+  admissions: RecentAdmission[];
+}

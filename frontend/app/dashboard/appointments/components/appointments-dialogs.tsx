@@ -12,7 +12,7 @@ export function AppointmentsDialogs() {
       <AppointmentsActionDialog
         key='appointment-add'
         open={open === 'add'}
-        onOpenChange={() => setOpen('add')}
+        onOpenChange={(isOpen) => setOpen(isOpen ? 'add' : null)}
       />
 
       {currentRow && (
@@ -20,11 +20,11 @@ export function AppointmentsDialogs() {
           <AppointmentsActionDialog
             key={`appointment-edit-${currentRow.id}`}
             open={open === 'edit'}
-            onOpenChange={() => {
-              setOpen('edit')
-              setTimeout(() => {
+            onOpenChange={(isOpen) => {
+              setOpen(isOpen ? 'edit' : null)
+              if (!isOpen) {
                 setCurrentRow(null)
-              }, 500)
+              }
             }}
             currentRow={currentRow}
           />
@@ -32,11 +32,11 @@ export function AppointmentsDialogs() {
           <AppointmentsDeleteDialog
             key={`appointment-delete-${currentRow.id}`}
             open={open === 'delete'}
-            onOpenChange={() => {
-              setOpen('delete')
-              setTimeout(() => {
+            onOpenChange={(isOpen) => {
+              setOpen(isOpen ? 'delete' : null)
+              if (!isOpen) {
                 setCurrentRow(null)
-              }, 500)
+              }
             }}
             currentRow={currentRow}
           />

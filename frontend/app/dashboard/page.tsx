@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,12 +11,41 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Analytics } from './components/analytics'
 import { Overview } from './components/overview'
 import { RecentAdmissions } from './components/recent-admissions'
+import { apiClient } from '@/lib/api'
+import type { DashboardStats, MonthlyStatsData, RecentAdmission } from '@/lib/types'
 
 export default function DashboardPage() {
   const { user, isLoading } = useAuth()
+  const [stats, setStats] = useState<DashboardStats | null>(null)
+  const [monthlyData, setMonthlyData] = useState<MonthlyStatsData[]>([])
+  const [recentAdmissions, setRecentAdmissions] = useState<RecentAdmission[]>([])
+  const [dataLoading, setDataLoading] = useState(true)
+
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData()
+    }
+  }, [user])
+
+  const fetchDashboardData = async () => {
+    try {
+      setDataLoading(true)
+      const [statsData, monthlyStatsData, admissionsData] = await Promise.all([
+        apiClient.getDashboardStats(),
+        apiClient.getMonthlyStats(),
+        apiClient.getRecentAdmissions(),
+      ])
+      setStats(statsData)
+      setMonthlyData(monthlyStatsData.data)
+      setRecentAdmissions(admissionsData.admissions)
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error)
+    } finally {
+      setDataLoading(false)
+    }
+  }
 
   if (isLoading || !user) {
     return (
@@ -44,7 +74,6 @@ export default function DashboardPage() {
         <div className='w-full overflow-x-auto pb-2'>
           <TabsList>
             <TabsTrigger value='overview'>Overview</TabsTrigger>
-            <TabsTrigger value='analytics'>Analytics</TabsTrigger>
             <TabsTrigger value='reports' disabled>
               Reports
             </TabsTrigger>
@@ -76,9 +105,11 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>2,350</div>
+                <div className='text-2xl font-bold'>
+                  {dataLoading ? '...' : stats?.totalPatients.toLocaleString() || '0'}
+                </div>
                 <p className='text-muted-foreground text-xs'>
-                  +180 from last month
+                  Total registered patients
                 </p>
               </CardContent>
             </Card>
@@ -104,9 +135,14 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>+48</div>
+                <div className='text-2xl font-bold'>
+                  {dataLoading ? '...' : stats?.todayAppointments.total || '0'}
+                </div>
                 <p className='text-muted-foreground text-xs'>
-                  12 completed, 36 pending
+                  {dataLoading
+                    ? 'Loading...'
+                    : `${stats?.todayAppointments.completed || 0} completed, ${stats?.todayAppointments.pending || 0} pending`
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -132,9 +168,14 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>86%</div>
+                <div className='text-2xl font-bold'>
+                  {dataLoading ? '...' : `${stats?.bedOccupancy.percentage || 0}%`}
+                </div>
                 <p className='text-muted-foreground text-xs'>
-                  172 of 200 beds occupied
+                  {dataLoading
+                    ? 'Loading...'
+                    : `${stats?.bedOccupancy.occupied || 0} of ${stats?.bedOccupancy.total || 0} beds occupied`
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -157,9 +198,14 @@ export default function DashboardPage() {
                 </svg>
               </CardHeader>
               <CardContent>
-                <div className='text-2xl font-bold'>127</div>
+                <div className='text-2xl font-bold'>
+                  {dataLoading ? '...' : stats?.staffOnDuty.total || '0'}
+                </div>
                 <p className='text-muted-foreground text-xs'>
-                  45 doctors, 82 nurses
+                  {dataLoading
+                    ? 'Loading...'
+                    : `${stats?.staffOnDuty.doctors || 0} doctors, ${stats?.staffOnDuty.nurses || 0} nurses`
+                  }
                 </p>
               </CardContent>
             </Card>
@@ -170,24 +216,21 @@ export default function DashboardPage() {
                 <CardTitle>Monthly Patient Overview</CardTitle>
               </CardHeader>
               <CardContent className='ps-2'>
-                <Overview />
+                <Overview data={monthlyData} isLoading={dataLoading} />
               </CardContent>
             </Card>
             <Card className='col-span-1 lg:col-span-3'>
               <CardHeader>
                 <CardTitle>Recent Admissions</CardTitle>
                 <CardDescription>
-                  Latest 5 patient admissions today.
+                  Latest patient admissions.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <RecentAdmissions />
+                <RecentAdmissions admissions={recentAdmissions} isLoading={dataLoading} />
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-        <TabsContent value='analytics' className='space-y-4'>
-          <Analytics />
         </TabsContent>
       </Tabs>
     </div>

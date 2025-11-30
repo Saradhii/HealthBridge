@@ -1,87 +1,61 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import type { RecentAdmission } from '@/lib/types'
+import { formatDistanceToNow } from 'date-fns'
 
-export function RecentAdmissions() {
+interface RecentAdmissionsProps {
+  admissions: RecentAdmission[]
+  isLoading: boolean
+}
+
+export function RecentAdmissions({ admissions, isLoading }: RecentAdmissionsProps) {
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <p className='text-muted-foreground text-sm'>Loading...</p>
+      </div>
+    )
+  }
+
+  if (!admissions || admissions.length === 0) {
+    return (
+      <div className='flex items-center justify-center p-8'>
+        <p className='text-muted-foreground text-sm'>No recent admissions</p>
+      </div>
+    )
+  }
+
+  const getInitials = (name: string) => {
+    const parts = name.split(' ')
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+    }
+    return name.substring(0, 2).toUpperCase()
+  }
+
   return (
     <div className='space-y-8'>
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/01.png' alt='Avatar' />
-          <AvatarFallback>JD</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>John Doe</p>
-            <p className='text-muted-foreground text-sm'>
-              Emergency - Cardiology
-            </p>
+      {admissions.map((admission) => (
+        <div key={admission.id} className='flex items-center gap-4'>
+          <Avatar className='h-9 w-9'>
+            <AvatarFallback>{getInitials(admission.patientName)}</AvatarFallback>
+          </Avatar>
+          <div className='flex flex-1 flex-wrap items-center justify-between'>
+            <div className='space-y-1'>
+              <p className='text-sm leading-none font-medium'>
+                {admission.patientName}
+              </p>
+              <p className='text-muted-foreground text-sm'>
+                {admission.ward} - {admission.department}
+              </p>
+            </div>
+            <div className='text-muted-foreground text-sm'>
+              {formatDistanceToNow(new Date(admission.checkIn), { addSuffix: true })}
+            </div>
           </div>
-          <div className='text-muted-foreground text-sm'>2h ago</div>
         </div>
-      </div>
-      <div className='flex items-center gap-4'>
-        <Avatar className='flex h-9 w-9 items-center justify-center space-y-0 border'>
-          <AvatarImage src='/avatars/02.png' alt='Avatar' />
-          <AvatarFallback>SM</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Sarah Miller</p>
-            <p className='text-muted-foreground text-sm'>
-              ICU - Neurology
-            </p>
-          </div>
-          <div className='text-muted-foreground text-sm'>3h ago</div>
-        </div>
-      </div>
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/03.png' alt='Avatar' />
-          <AvatarFallback>RJ</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Robert Johnson</p>
-            <p className='text-muted-foreground text-sm'>
-              General Ward - Orthopedics
-            </p>
-          </div>
-          <div className='text-muted-foreground text-sm'>5h ago</div>
-        </div>
-      </div>
-
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/04.png' alt='Avatar' />
-          <AvatarFallback>EW</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Emily Wilson</p>
-            <p className='text-muted-foreground text-sm'>
-              Maternity - Obstetrics
-            </p>
-          </div>
-          <div className='text-muted-foreground text-sm'>6h ago</div>
-        </div>
-      </div>
-
-      <div className='flex items-center gap-4'>
-        <Avatar className='h-9 w-9'>
-          <AvatarImage src='/avatars/05.png' alt='Avatar' />
-          <AvatarFallback>MB</AvatarFallback>
-        </Avatar>
-        <div className='flex flex-1 flex-wrap items-center justify-between'>
-          <div className='space-y-1'>
-            <p className='text-sm leading-none font-medium'>Michael Brown</p>
-            <p className='text-muted-foreground text-sm'>
-              Pediatrics - General
-            </p>
-          </div>
-          <div className='text-muted-foreground text-sm'>8h ago</div>
-        </div>
-      </div>
+      ))}
     </div>
   )
 }

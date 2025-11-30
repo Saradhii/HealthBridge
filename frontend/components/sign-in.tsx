@@ -1,46 +1,54 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
 import { LogoIcon } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { PasswordInput } from '@/components/password-input';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/lib/store/auth';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Info } from 'lucide-react';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+
+const signInSchema = z.object({
+  email: z.string().min(1, 'Email is required').email('Please enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+type SignInForm = z.infer<typeof signInSchema>;
 
 export default function SignInPage() {
     const router = useRouter();
     const login = useAuthStore((state) => state.login);
-
     const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        email: '',
-        password: '',
+
+    const form = useForm<SignInForm>({
+        resolver: zodResolver(signInSchema),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
     });
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        if (!formData.email || !formData.password) {
-            toast.error('Please fill in all fields');
-            return;
-        }
-
+    const handleSubmit = async (data: SignInForm) => {
         setIsLoading(true);
 
         try {
-            await login(formData.email, formData.password);
+            await login(data.email, data.password);
             toast.success('Logged in successfully!');
             router.push('/dashboard');
         } catch (error) {
@@ -57,81 +65,96 @@ export default function SignInPage() {
     return (
         <section className="grid min-h-screen lg:grid-cols-2">
             <div className="flex items-center justify-center bg-zinc-50 px-4 py-16 dark:bg-transparent">
-                <form
-                    onSubmit={handleSubmit}
-                    className="max-w-92 h-fit w-full">
-                    <div className="p-6">
-                        <div>
-                        <Link
-    href="/"
-    aria-label="go home"
-    className="flex items-center gap-2"
-  >
-    <LogoIcon />
-    <span>HealthBridge</span>
-  </Link>
-                            <h1 className="mb-1 mt-4 text-xl font-semibold">Sign In to Your Account</h1>
-                            <p>Welcome back! Please sign in to continue</p>
-                        </div>
+                <Form {...form}>
+                    <form
+                        onSubmit={form.handleSubmit(handleSubmit)}
+                        className="max-w-92 h-fit w-full">
+                        <div className="p-6">
+                            <div>
+                                <Link
+                                    href="/"
+                                    aria-label="go home"
+                                    className="flex items-center gap-2"
+                                >
+                                    <LogoIcon />
+                                    <span>HealthBridge</span>
+                                </Link>
+                                <h1 className="mb-1 mt-4 text-xl font-semibold">Sign In to Your Account</h1>
+                                <p>Welcome back! Please sign in to continue</p>
+                                <div className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 p-3 dark:bg-blue-950/20">
+                                    <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                                    <p className="text-xs text-muted-foreground leading-relaxed">
+                                        The backend is deployed on Render with a 50-second cold start delay. Please expect a delay on the first request.
+                                    </p>
+                                </div>
+                            </div>
 
-                        <div className="mt-6 space-y-6">
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="email"
-                                    className="block text-sm">
-                                    Email
-                                </Label>
-                                <Input
-                                    type="email"
-                                    required
+                            <div className="mt-6 space-y-6">
+                                <FormField
+                                    control={form.control}
                                     name="email"
-                                    id="email"
-                                    value={formData.email}
-                                    onChange={handleInputChange}
-                                    disabled={isLoading}
-                                    autoComplete="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Email <span className="text-destructive">*</span>
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    type="email"
+                                                    placeholder="Enter your email"
+                                                    disabled={isLoading}
+                                                    autoComplete="email"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
-                            </div>
 
-                            <div className="space-y-2">
-                                <Label
-                                    htmlFor="password"
-                                    className="block text-sm">
-                                    Password
-                                </Label>
-                                <Input
-                                    type="password"
-                                    required
+                                <FormField
+                                    control={form.control}
                                     name="password"
-                                    id="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    disabled={isLoading}
-                                    autoComplete="current-password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>
+                                                Password <span className="text-destructive">*</span>
+                                            </FormLabel>
+                                            <FormControl>
+                                                <PasswordInput
+                                                    placeholder="Enter your password"
+                                                    disabled={isLoading}
+                                                    autoComplete="current-password"
+                                                    {...field}
+                                                />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
                                 />
+
+                                <Button
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={isLoading}
+                                >
+                                    {isLoading ? 'Signing in...' : 'Continue'}
+                                </Button>
                             </div>
-
-                            <Button
-                                type="submit"
-                                className="w-full"
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'Signing in...' : 'Continue'}
-                            </Button>
                         </div>
-                    </div>
 
-                    <p className="text-accent-foreground text-center text-sm">
-                        Don't have an account?
-                        <Button
-                            asChild
-                            variant="link"
-                            className="px-2"
-                            disabled={isLoading}>
-                            <Link href="/signup">Sign Up</Link>
-                        </Button>
-                    </p>
-                </form>
+                        <p className="text-accent-foreground text-center text-sm">
+                            Don't have an account?
+                            <Button
+                                asChild
+                                variant="link"
+                                className="px-2"
+                                disabled={isLoading}>
+                                <Link href="/signup">Sign Up</Link>
+                            </Button>
+                        </p>
+                    </form>
+                </Form>
             </div>
 
             <div className="relative hidden lg:block">

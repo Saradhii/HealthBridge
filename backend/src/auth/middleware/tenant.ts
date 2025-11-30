@@ -2,20 +2,18 @@ import { Context, Next } from 'hono';
 import { verifyAccessToken } from '../../lib/jwt';
 import type { AppContext } from '../types';
 
-export const tenantMiddleware = async (c: Context<AppContext>, next: Next): Promise<void> => {
+export const tenantMiddleware = async (c: Context<AppContext>, next: Next) => {
   const authHeader = c.req.header('Authorization');
 
   if (!authHeader) {
-    c.json({ error: 'No authorization token provided' }, 401);
-    return;
+    return c.json({ error: 'No authorization token provided' }, 401);
   }
 
   const token = authHeader.replace('Bearer ', '');
   const decoded = verifyAccessToken(token);
 
   if (!decoded) {
-    c.json({ error: 'Invalid or expired token' }, 401);
-    return;
+    return c.json({ error: 'Invalid or expired token' }, 401);
   }
 
   c.set('userId', decoded.userId);

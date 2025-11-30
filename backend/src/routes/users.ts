@@ -369,7 +369,7 @@ usersRouter.post('/', requirePermission('USER', 'CREATE'), async (c) => {
       tempPassword, // Only return on creation
     });
   } catch (error) {
-    return c.json({ error: 'Failed to create user' }, 500);
+    return c.json({ error: error,  }, 500);
   }
 });
 

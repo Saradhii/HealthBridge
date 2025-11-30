@@ -6,6 +6,7 @@ import usersRouter from './routes/users';
 import patientsRouter from './routes/patients';
 import appointmentsRouter from './routes/appointments';
 import wardsRouter from './routes/wards';
+import dashboardRouter from './routes/dashboard';
 
 const app = new Hono();
 
@@ -21,6 +22,7 @@ app.route('/api/users', usersRouter);
 app.route('/api/patients', patientsRouter);
 app.route('/api/appointments', appointmentsRouter);
 app.route('/api/wards', wardsRouter);
+app.route('/api/dashboard', dashboardRouter);
 
 export default app;
 
