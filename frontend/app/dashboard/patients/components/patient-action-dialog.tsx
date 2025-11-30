@@ -36,9 +36,7 @@ const formSchema = z.object({
   lastName: z.string().min(1, 'Last Name is required.'),
   email: z.string().email().or(z.literal('')).optional(),
   phone: z.string().min(1, 'Phone number is required.'),
-  dateOfBirth: z.date({
-    required_error: 'Date of birth is required.',
-  }),
+  dateOfBirth: z.date({ message: 'Date of birth is required.' }),
   gender: z.enum(['male', 'female', 'other']),
   bloodGroup: z.enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']).optional().or(z.literal('')),
   address: z.string().optional(),
@@ -134,6 +132,7 @@ export function PatientActionDialog({
 
       const patientData = {
         ...values,
+        dateOfBirth: values.dateOfBirth ? format(values.dateOfBirth, 'yyyy-MM-dd') : '',
         email: values.email || null,
         bloodGroup: values.bloodGroup || null,
         address: values.address || null,
