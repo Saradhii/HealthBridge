@@ -6,8 +6,9 @@
     "node": ">=18.x"
   },
   "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "build": "esbuild src/vercel-entry.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --external:@neondatabase/serverless --external:@upstash/redis",
+    "dev": "bun --watch src/server.ts",
+    "build": "esbuild src/server.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --external:@neondatabase/serverless --external:@upstash/redis --external:@hono/node-server --external:hono --external:jsonwebtoken --external:bcryptjs --external:drizzle-orm --external:zod",
+    "build:vercel": "esbuild src/vercel-entry.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --external:@neondatabase/serverless --external:@upstash/redis --external:@hono/node-server --external:hono --external:jsonwebtoken --external:bcryptjs --external:drizzle-orm --external:zod",
     "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun src/migrate.ts",
