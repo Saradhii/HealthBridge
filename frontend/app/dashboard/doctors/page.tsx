@@ -33,10 +33,15 @@ export default function DoctorsPage() {
 
       // Transform API response to match UI schema
       const transformedDoctors: User[] = response.users.map((user) => ({
-        ...user,
-        createdAt: new Date(user.createdAt),
-        updatedAt: new Date(user.updatedAt),
-        status: user.isActive ? ('active' as const) : ('inactive' as const),
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        department: user.department || undefined,
+        specialization: user.specialization || undefined,
+        shift: user.shift || undefined,
+        tenantId: user.tenantId || '',
+        roles: user.roles?.map(role => role.name || role.slug || '') || [],
+        forcePasswordChange: user.forcePasswordChange,
       }))
 
       setDoctors(transformedDoctors)

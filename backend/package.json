@@ -2,10 +2,13 @@
   "name": "healthbridge-backend",
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.x"
+  },
   "scripts": {
     "dev": "bun --watch src/index.ts",
-    "build": "bun build src/index.ts --outdir ./dist --target bun",
-    "start": "bun run dist/index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --outfile=dist/index.js --external:@neondatabase/serverless --external:@upstash/redis --packages=external",
+    "start": "node dist/index.js",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "bun src/migrate.ts",
     "db:seed": "bun seed/index.ts",
@@ -18,11 +21,12 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "hono": "^4.6.14",
-    "drizzle-orm": "^0.36.4",
+    "@hono/node-server": "^1.19.6",
     "@neondatabase/serverless": "latest",
     "@upstash/redis": "^1.34.3",
     "bcryptjs": "^2.4.3",
+    "drizzle-orm": "^0.36.4",
+    "hono": "^4.6.14",
     "jsonwebtoken": "^9.0.2",
     "zod": "^3.23.8"
   },
@@ -30,6 +34,7 @@
     "@types/bun": "latest",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.7",
-    "drizzle-kit": "^0.30.1"
+    "drizzle-kit": "^0.30.1",
+    "esbuild": "^0.27.0"
   }
 }

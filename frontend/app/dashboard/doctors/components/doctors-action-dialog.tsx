@@ -62,7 +62,7 @@ export function DoctorsActionDialog({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const form = useForm<DoctorForm>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: currentRow?.name || '',
       email: currentRow?.email || '',
@@ -214,7 +214,7 @@ export function DoctorsActionDialog({
                   <FormItem>
                     <FormLabel>Specialization</FormLabel>
                     <SelectDropdown
-                      defaultValue={field.value}
+                      defaultValue={field.value || undefined}
                       onValueChange={field.onChange}
                       placeholder='Select specialization'
                       items={doctorSpecializations.map((spec) => ({
@@ -235,7 +235,7 @@ export function DoctorsActionDialog({
                   <FormItem>
                     <FormLabel>Department</FormLabel>
                     <SelectDropdown
-                      defaultValue={field.value}
+                      defaultValue={field.value || undefined}
                       onValueChange={field.onChange}
                       placeholder='Select department'
                       items={doctorDepartments.map((dept) => ({
@@ -256,7 +256,7 @@ export function DoctorsActionDialog({
                   <FormItem>
                     <FormLabel>Shift</FormLabel>
                     <SelectDropdown
-                      defaultValue={field.value}
+                      defaultValue={field.value || undefined}
                       onValueChange={field.onChange}
                       placeholder='Select shift'
                       items={shifts.map((shift) => ({

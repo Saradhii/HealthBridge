@@ -24,8 +24,11 @@ app.route('/api/wards', wardsRouter);
 
 const port = process.env.PORT || 8080;
 
+// Export for Vercel
+export default app;
 
-export default {
+// For Bun runtime
+export const config = {
   port,
   fetch: app.fetch,
 };

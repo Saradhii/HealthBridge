@@ -1,0 +1,11 @@
+node_modules
+src
+seed
+drizzle
+*.ts
+tsconfig.json
+.env
+.env.*
+bun.lock
+*.sql
+scripts

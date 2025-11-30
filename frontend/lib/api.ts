@@ -56,8 +56,7 @@ class ApiClient {
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {},
-    includeStatus: boolean = false
+    options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseUrl}${endpoint}`;
 
@@ -156,7 +155,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const authStore = useAuthStore.getState();
-    let { accessToken, refreshToken } = authStore;
+    const { accessToken, refreshToken } = authStore;
 
     if (!accessToken) {
       throw new Error('No access token found. Please login.');
@@ -219,7 +218,7 @@ class ApiClient {
     }
   }
 
-  setAuthToken(token: string) {
+  setAuthToken(_token: string) {
     this.request = this.request.bind(this);
   }
 
