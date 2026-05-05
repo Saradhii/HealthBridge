@@ -19,7 +19,9 @@
     "db:seed-patients": "bun seed/seed-patients.ts",
     "db:seed-appointments": "bun seed/seed-appointments.ts",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "dev:worker": "wrangler dev",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@hono/node-server": "^1.19.6",
@@ -38,6 +40,7 @@
     "@types/node": "^24.10.1",
     "drizzle-kit": "^0.30.1",
     "esbuild": "^0.27.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "wrangler": "^4.88.0"
   }
 }

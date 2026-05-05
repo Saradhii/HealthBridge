@@ -3,8 +3,33 @@ import { Pool } from '@neondatabase/serverless';
 import * as schema from './schema';
 import { eq, and, count } from 'drizzle-orm';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL! });
-export const db = drizzle(pool, { schema });
+function createDb() {
+  return drizzle(new Pool({ connectionString: process.env.DATABASE_URL! }), { schema });
+}
+
+type DbType = ReturnType<typeof createDb>;
+
+let poolInstance: Pool | null = null;
+let dbInstance: DbType | null = null;
+
+function initDb(): DbType {
+  if (!dbInstance) {
+    poolInstance = new Pool({ connectionString: process.env.DATABASE_URL! });
+    dbInstance = drizzle(poolInstance, { schema });
+  }
+  return dbInstance;
+}
+
+export const db = new Proxy({} as unknown as DbType, {
+  get(_, prop) {
+    const instance = initDb();
+    const value = (instance as any)[prop];
+    if (typeof value === 'function') {
+      return value.bind(instance);
+    }
+    return value;
+  }
+}) as unknown as DbType;
 
 // Database utility functions
 export async function getTenantById(tenantId: string) {
@@ -77,7 +102,11 @@ export async function countUsersInTenant(tenantId: string) {
 }
 
 export async function closeDbConnection() {
-  await pool.end();
+  if (poolInstance) {
+    await poolInstance.end();
+    poolInstance = null;
+    dbInstance = null;
+  }
 }
 
 // Transaction helper
