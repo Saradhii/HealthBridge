@@ -1,11 +1,28 @@
 import { Redis } from '@upstash/redis';
 
-const redisUrl = process.env.REDIS_URL!;
-const token = redisUrl.split('default:')[1].split('@')[0];
-const host = redisUrl.split('@')[1];
-const url = `https://${host.replace(':6379', '')}`;
+let redisInstance: Redis | null = null;
 
-export const redis = new Redis({ url, token });
+function initRedis(): Redis {
+  if (!redisInstance) {
+    const redisUrl = process.env.REDIS_URL!;
+    const token = redisUrl.split('default:')[1].split('@')[0];
+    const host = redisUrl.split('@')[1];
+    const url = `https://${host.replace(':6379', '')}`;
+    redisInstance = new Redis({ url, token });
+  }
+  return redisInstance;
+}
+
+export const redis = new Proxy({} as Redis, {
+  get(_, prop) {
+    const instance = initRedis();
+    const value = (instance as any)[prop];
+    if (typeof value === 'function') {
+      return value.bind(instance);
+    }
+    return value;
+  }
+});
 
 export const getTenantRedisKey = (tenantId: string, key: string): string => {
   return `tenant:${tenantId}:${key}`;
