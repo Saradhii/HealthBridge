@@ -3,8 +3,9 @@ import { eq, and, gte, lte, sql, desc, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { patients, appointments, rooms, wards, patientStays, users } from '../db/schema';
 import { tenantMiddleware } from '../auth';
+import type { AppContext } from '../auth/types';
 
-const dashboardRouter = new Hono();
+const dashboardRouter = new Hono<AppContext>();
 
 dashboardRouter.use('/*', tenantMiddleware);
 

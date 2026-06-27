@@ -47,6 +47,3 @@ app.route('/api/wards', wardsRouter);
 app.route('/api/dashboard', dashboardRouter);
 
 export default app;
-
-// auto-added so vercel-entry can import { app }
-export { app as app };
