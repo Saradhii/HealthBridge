@@ -17,6 +17,9 @@ const AVAILABLE_PERMISSIONS = [
   { resource: 'PATIENT', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
   { resource: 'APPOINTMENT', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
   { resource: 'WARD', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
+  { resource: 'PRESCRIPTION', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
+  { resource: 'LAB_RESULT', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
+  { resource: 'PROCEDURE', actions: ['CREATE', 'READ', 'UPDATE', 'DELETE'] },
 ];
 
 rolesRouter.get('/permissions', requirePermission('ROLE', 'READ'), async (c) => {

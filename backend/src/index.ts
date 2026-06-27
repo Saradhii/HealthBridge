@@ -6,6 +6,9 @@ import usersRouter from './routes/users';
 import patientsRouter from './routes/patients';
 import appointmentsRouter from './routes/appointments';
 import wardsRouter from './routes/wards';
+import prescriptionsRouter from './routes/prescriptions';
+import labResultsRouter from './routes/labResults';
+import proceduresRouter from './routes/procedures';
 import dashboardRouter from './routes/dashboard';
 import { errorHandler, notFoundHandler } from './middleware/error';
 
@@ -58,6 +61,9 @@ app.route('/api/users', usersRouter);
 app.route('/api/patients', patientsRouter);
 app.route('/api/appointments', appointmentsRouter);
 app.route('/api/wards', wardsRouter);
+app.route('/api/prescriptions', prescriptionsRouter);
+app.route('/api/lab-results', labResultsRouter);
+app.route('/api/procedures', proceduresRouter);
 app.route('/api/dashboard', dashboardRouter);
 
 app.notFound(notFoundHandler);
