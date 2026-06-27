@@ -65,6 +65,21 @@ export const sidebarData: SidebarData = {
           icon: Stethoscope,
         },
         {
+          title: 'Prescriptions',
+          url: '/dashboard/prescriptions',
+          icon: Pill,
+        },
+        {
+          title: 'Lab Results',
+          url: '/dashboard/lab-results',
+          icon: ClipboardList,
+        },
+        {
+          title: 'Procedures',
+          url: '/dashboard/procedures',
+          icon: Syringe,
+        },
+        {
           title: 'Wards & Beds',
           url: '/dashboard/wards',
           icon: BedDouble,
@@ -99,26 +114,6 @@ export const sidebarData: SidebarData = {
           title: 'Help Center',
           url: '/dashboard/help',
           icon: HelpCircle,
-        },
-      ],
-    },
-    {
-      title: 'Under Development',
-      items: [
-        {
-          title: 'Prescriptions',
-          url: '/dashboard/prescriptions',
-          icon: Pill,
-        },
-        {
-          title: 'Lab Results',
-          url: '/dashboard/lab-results',
-          icon: ClipboardList,
-        },
-        {
-          title: 'Procedures',
-          url: '/dashboard/procedures',
-          icon: Syringe,
         },
       ],
     },

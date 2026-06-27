@@ -25,6 +25,24 @@ import type {
   UpdateAppointmentRequest,
   UpdateAppointmentResponse,
   GetAppointmentResponse,
+  GetPrescriptionsResponse,
+  CreatePrescriptionRequest,
+  CreatePrescriptionResponse,
+  UpdatePrescriptionRequest,
+  UpdatePrescriptionResponse,
+  GetPrescriptionResponse,
+  GetLabResultsResponse,
+  CreateLabResultRequest,
+  CreateLabResultResponse,
+  UpdateLabResultRequest,
+  UpdateLabResultResponse,
+  GetLabResultResponse,
+  GetProceduresResponse,
+  CreateProcedureRequest,
+  CreateProcedureResponse,
+  UpdateProcedureRequest,
+  UpdateProcedureResponse,
+  GetProcedureResponse,
   GetWardsResponse,
   CreateWardRequest,
   CreateWardResponse,
@@ -387,6 +405,120 @@ class ApiClient {
 
   async deleteAppointment(id: string): Promise<{ message: string }> {
     return this.authenticatedRequest<{ message: string }>(`/api/appointments/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Prescription Management APIs
+  async getPrescriptions(params?: {
+    page?: number;
+    limit?: number;
+    patientId?: string;
+    status?: string;
+    search?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<GetPrescriptionsResponse> {
+    return this.authenticatedRequest<GetPrescriptionsResponse>(
+      `/api/prescriptions${this.buildQuery(params)}`
+    );
+  }
+
+  async getPrescription(id: string): Promise<GetPrescriptionResponse> {
+    return this.authenticatedRequest<GetPrescriptionResponse>(`/api/prescriptions/${id}`);
+  }
+
+  async createPrescription(data: CreatePrescriptionRequest): Promise<CreatePrescriptionResponse> {
+    return this.authenticatedRequest<CreatePrescriptionResponse>('/api/prescriptions', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updatePrescription(id: string, data: UpdatePrescriptionRequest): Promise<UpdatePrescriptionResponse> {
+    return this.authenticatedRequest<UpdatePrescriptionResponse>(`/api/prescriptions/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deletePrescription(id: string): Promise<{ message: string }> {
+    return this.authenticatedRequest<{ message: string }>(`/api/prescriptions/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Lab Result Management APIs
+  async getLabResults(params?: {
+    page?: number;
+    limit?: number;
+    patientId?: string;
+    status?: string;
+    search?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<GetLabResultsResponse> {
+    return this.authenticatedRequest<GetLabResultsResponse>(
+      `/api/lab-results${this.buildQuery(params)}`
+    );
+  }
+
+  async getLabResult(id: string): Promise<GetLabResultResponse> {
+    return this.authenticatedRequest<GetLabResultResponse>(`/api/lab-results/${id}`);
+  }
+
+  async createLabResult(data: CreateLabResultRequest): Promise<CreateLabResultResponse> {
+    return this.authenticatedRequest<CreateLabResultResponse>('/api/lab-results', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateLabResult(id: string, data: UpdateLabResultRequest): Promise<UpdateLabResultResponse> {
+    return this.authenticatedRequest<UpdateLabResultResponse>(`/api/lab-results/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteLabResult(id: string): Promise<{ message: string }> {
+    return this.authenticatedRequest<{ message: string }>(`/api/lab-results/${id}`, {
+      method: 'DELETE',
+    });
+  }
+
+  // Procedure Management APIs
+  async getProcedures(params?: {
+    page?: number;
+    limit?: number;
+    patientId?: string;
+    status?: string;
+    search?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<GetProceduresResponse> {
+    return this.authenticatedRequest<GetProceduresResponse>(
+      `/api/procedures${this.buildQuery(params)}`
+    );
+  }
+
+  async getProcedure(id: string): Promise<GetProcedureResponse> {
+    return this.authenticatedRequest<GetProcedureResponse>(`/api/procedures/${id}`);
+  }
+
+  async createProcedure(data: CreateProcedureRequest): Promise<CreateProcedureResponse> {
+    return this.authenticatedRequest<CreateProcedureResponse>('/api/procedures', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async updateProcedure(id: string, data: UpdateProcedureRequest): Promise<UpdateProcedureResponse> {
+    return this.authenticatedRequest<UpdateProcedureResponse>(`/api/procedures/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async deleteProcedure(id: string): Promise<{ message: string }> {
+    return this.authenticatedRequest<{ message: string }>(`/api/procedures/${id}`, {
       method: 'DELETE',
     });
   }
