@@ -49,9 +49,8 @@ export function UsersInviteDialog({
     defaultValues: { email: '', role: '', desc: '' },
   })
 
-  const onSubmit = (values: UserInviteForm) => {
+  const onSubmit = () => {
     form.reset()
-    console.log('Invited user:', values)
     onOpenChange(false)
   }
 

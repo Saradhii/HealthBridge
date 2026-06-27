@@ -1,6 +1,6 @@
 'use client'
 
-import { MailPlus, UserPlus, Stethoscope } from 'lucide-react'
+import { MailPlus, UserPlus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useDoctors } from './doctors-provider'
 

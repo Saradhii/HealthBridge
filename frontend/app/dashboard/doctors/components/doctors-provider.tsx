@@ -33,7 +33,6 @@ export function DoctorsProvider({
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useDoctors = () => {
   const doctorsContext = React.useContext(DoctorsContext)
 

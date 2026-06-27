@@ -21,7 +21,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { SelectDropdown } from '@/components/select-dropdown'
 import { type User } from '../data/schema'
@@ -92,12 +91,10 @@ export function DoctorsActionDialog({
     try {
       if (isEdit && currentRow) {
         // TODO: Implement update doctor functionality
-        console.log('Update doctor:', payload)
         setSuccessMessage('Doctor updated successfully!')
       } else {
         // Create new doctor
         const response = await apiClient.createUser(payload)
-        console.log('Created doctor:', response)
 
         // Show success message with temporary password
         setSuccessMessage(

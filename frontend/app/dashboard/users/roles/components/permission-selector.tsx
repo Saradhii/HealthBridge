@@ -27,7 +27,7 @@ export function PermissionSelector({ selectedPermissions, onChange }: Permission
       setLoading(true)
       const response = await apiClient.getPermissions()
       setPermissions(response.permissions)
-    } catch (error) {
+    } catch {
       toast.error('Failed to fetch permissions')
     } finally {
       setLoading(false)

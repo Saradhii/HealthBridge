@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   type SortingState,
   type VisibilityState,
@@ -23,7 +23,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { DataTableServerPagination, DataTableToolbar } from '@/components/data-table'
-import { doctorSpecializations, doctorDepartments, shifts, doctorRole } from '../data/data'
+import { doctorSpecializations, doctorDepartments, shifts } from '../data/data'
 import { type User } from '../data/schema'
 import { type GetUsersResponse } from '@/lib/types'
 import { DataTableBulkActions } from './data-table-bulk-actions'

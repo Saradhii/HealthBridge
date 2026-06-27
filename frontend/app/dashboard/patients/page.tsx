@@ -7,7 +7,7 @@ import { UsersProvider } from './components/users-provider'
 import { PatientsTable } from './components/patients-table'
 import { UsersTableSkeleton } from './components/users-table-skeleton'
 import { apiClient } from '@/lib/api'
-import { type PatientFromDB, type GetPatientsResponse } from '@/lib/types'
+import { type GetPatientsResponse } from '@/lib/types'
 import { type Patient } from './data/schema'
 
 export default function PatientsPage() {

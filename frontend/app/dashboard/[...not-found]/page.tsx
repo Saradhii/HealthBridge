@@ -1,6 +1,5 @@
 'use client'
 
-import { notFound } from 'next/navigation'
 import DashboardNotFound from '../not-found'
 
 export default function CatchAllNotFound() {

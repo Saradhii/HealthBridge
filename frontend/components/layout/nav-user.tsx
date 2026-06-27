@@ -1,10 +1,9 @@
 'use client'
 
-import { Link } from '@/lib/router-compat'
+import Link from 'next/link'
 import {
   BadgeCheck,
   Bell,
-  ChevronsUpDown,
   CreditCard,
   LogOut,
   Sparkles,
@@ -118,19 +117,19 @@ export function NavUser({ user }: NavUserProps) {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link to='/dashboard/settings'>
+                  <Link href='/dashboard/settings'>
                     <BadgeCheck />
                     Account
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to='/dashboard/settings'>
+                  <Link href='/dashboard/settings'>
                     <CreditCard />
                     Billing
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to='/dashboard/settings/notifications'>
+                  <Link href='/dashboard/settings/notifications'>
                     <Bell />
                     Notifications
                   </Link>

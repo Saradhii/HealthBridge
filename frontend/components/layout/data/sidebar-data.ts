@@ -2,9 +2,7 @@ import {
   LayoutDashboard,
   Users,
   Calendar,
-  FileText,
   Stethoscope,
-  Building2,
   Settings,
   UserCog,
   Bell,
@@ -16,7 +14,6 @@ import {
   BedDouble,
   Syringe,
   UsersRound,
-  Wrench,
 } from 'lucide-react'
 import { type SidebarData } from '../types'
 

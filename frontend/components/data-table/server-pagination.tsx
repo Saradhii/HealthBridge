@@ -32,7 +32,6 @@ export function DataTableServerPagination({
   currentPage,
   totalPages,
   pageSize,
-  total,
   canPreviousPage,
   canNextPage,
   onPageChange,

@@ -1,4 +1,4 @@
-import { User2, User, Users, Circle, CheckCircle2, XCircle, Droplet } from 'lucide-react'
+import { User2, User, Users, CheckCircle2, XCircle, Droplet } from 'lucide-react'
 import { type PatientStatus } from './schema'
 
 // Status colors for badges

@@ -137,9 +137,7 @@ export const doctorsColumns: ColumnDef<User>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Role' />
     ),
-    cell: ({ row }) => {
-      const userRoles = row.getValue('roles') as Array<{ id: string; name: string; slug: string }>
-
+    cell: () => {
       return (
         <div className='flex items-center gap-x-1.5'>
           {doctorRole.icon && (

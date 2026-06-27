@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import {
-  type SortingState,
   type VisibilityState,
   type ColumnFiltersState,
   flexRender,
@@ -59,7 +58,6 @@ export function PatientsTable({
   isLoading = false,
   filters,
   updateFilters,
-  resetFilters,
 }: DataTableProps) {
   // Local UI-only states
   const [rowSelection, setRowSelection] = useState({})

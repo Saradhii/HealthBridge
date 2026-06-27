@@ -30,7 +30,6 @@ export function Header({ className, fixed, children, ...props }: HeaderProps) {
   const [showLogoutDialog, setShowLogoutDialog] = useState(false)
   const router = useRouter()
   const logout = useAuthStore((state) => state.logout)
-  const tenant = useAuthStore((state) => state.tenant)
 
   useEffect(() => {
     const onScroll = () => {

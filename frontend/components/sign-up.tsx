@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { LogoIcon } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/password-input';
 import Link from 'next/link';
 import Image from 'next/image';

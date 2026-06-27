@@ -23,17 +23,9 @@ export function DataTableViewOptions<TData>({
   const [open, setOpen] = React.useState(false)
 
   return (
-    <DropdownMenu
-      modal={false}
-      open={open}
-      onOpenChange={(isOpen) => {
-        console.log('🔄 View dropdown state change:', isOpen ? 'OPENING' : 'CLOSING')
-        setOpen(isOpen)
-      }}
-    >
+    <DropdownMenu modal={false} open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <Button
-          onClick={() => console.log('🖱️ "View" button clicked')}
           variant='outline'
           size='sm'
           className='ms-auto hidden h-8 lg:flex'
@@ -50,7 +42,7 @@ export function DataTableViewOptions<TData>({
           .filter(
             (column) =>
               (typeof column.accessorFn !== 'undefined' ||
-               typeof (column.columnDef as any).accessorKey !== 'undefined') &&
+               'accessorKey' in column.columnDef) &&
               column.getCanHide()
           )
           .map((column) => {
