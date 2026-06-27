@@ -53,7 +53,7 @@ export function AppointmentsActionDialog({
   onOpenChange,
 }: AppointmentActionDialogProps) {
   const isEdit = !!currentRow
-  const { refreshAppointments } = useAppointments()
+  const { refresh } = useAppointments()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [patients, setPatients] = useState<PatientFromDB[]>([])
   const [isLoadingPatients, setIsLoadingPatients] = useState(false)
@@ -123,7 +123,7 @@ export function AppointmentsActionDialog({
       }
 
       form.reset()
-      refreshAppointments()
+      refresh()
       onOpenChange(false)
     } catch (error) {
       toast.error(isEdit ? 'Failed to update appointment' : 'Failed to create appointment')

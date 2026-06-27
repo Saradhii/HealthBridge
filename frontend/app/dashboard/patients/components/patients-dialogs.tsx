@@ -2,10 +2,10 @@
 
 import { PatientActionDialog } from './patient-action-dialog'
 import { PatientDeleteDialog } from './patient-delete-dialog'
-import { useUsers } from './users-provider'
+import { usePatients } from './patients-provider'
 
-export function UsersDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow } = useUsers()
+export function PatientsDialogs() {
+  const { open, setOpen, currentRow, setCurrentRow } = usePatients()
   return (
     <>
       <PatientActionDialog
@@ -13,8 +13,6 @@ export function UsersDialogs() {
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
       />
-
-      {/* Note: 'invite' functionality can be repurposed for quick patient admission if needed */}
 
       {currentRow && (
         <>

@@ -22,7 +22,7 @@ export function DoctorsMultiDeleteDialog<TData>({
   table,
 }: DoctorMultiDeleteDialogProps<TData>) {
   const [isDeleting, setIsDeleting] = useState(false)
-  const { refreshDoctors } = useDoctors()
+  const { refresh } = useDoctors()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
@@ -36,7 +36,7 @@ export function DoctorsMultiDeleteDialog<TData>({
 
       onOpenChange(false)
       table.resetRowSelection()
-      refreshDoctors()
+      refresh()
 
       toast.success(result.message)
 

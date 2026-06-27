@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState, useCallback, useRef } from 'react'
-import { UsersDialogs } from './components/users-dialogs'
-import { UsersPrimaryButtons } from './components/users-primary-buttons'
-import { UsersProvider } from './components/users-provider'
+import { PatientsDialogs } from './components/patients-dialogs'
+import { PatientsPrimaryButtons } from './components/patients-primary-buttons'
+import { PatientsProvider } from './components/patients-provider'
 import { PatientsTable } from './components/patients-table'
-import { UsersTableSkeleton } from './components/users-table-skeleton'
+import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
 import { type GetPatientsResponse } from '@/lib/types'
 import { type Patient } from './data/schema'
@@ -123,20 +123,6 @@ export default function PatientsPage() {
     fetchPatients({ page: 1, ...updatedFilters })
   }, [fetchPatients])
 
-  const resetFilters = useCallback(() => {
-    const defaultFilters = {
-      search: '',
-      gender: '',
-      bloodGroup: '',
-      isActive: '',
-      sortBy: 'createdAt',
-      sortOrder: 'desc' as 'asc' | 'desc',
-    }
-    setFilters(defaultFilters)
-    setPagination(prev => ({ ...prev, page: 1 }))
-    fetchPatients({ page: 1, ...defaultFilters })
-  }, [fetchPatients])
-
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }))
     fetchPatients({ page: newPage })
@@ -154,7 +140,7 @@ export default function PatientsPage() {
   }
 
   return (
-    <UsersProvider refreshUsers={() => fetchPatients()}>
+    <PatientsProvider refresh={() => fetchPatients()}>
       <div className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -163,10 +149,10 @@ export default function PatientsPage() {
               Manage patient admissions and medical records.
             </p>
           </div>
-          <UsersPrimaryButtons />
+          <PatientsPrimaryButtons />
         </div>
         {isLoading ? (
-          <UsersTableSkeleton />
+          <DataTableSkeleton columns={8} />
         ) : error ? (
           <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
             <p className='text-destructive'>{error}</p>
@@ -178,15 +164,13 @@ export default function PatientsPage() {
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
             onSortChange={handleSortChange}
-            isLoading={isLoading}
             filters={filters}
             updateFilters={updateFilters}
-            resetFilters={resetFilters}
           />
         )}
       </div>
 
-      <UsersDialogs />
-    </UsersProvider>
+      <PatientsDialogs />
+    </PatientsProvider>
   )
 }

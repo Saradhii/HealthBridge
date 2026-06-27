@@ -62,7 +62,7 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <AppointmentsProvider refreshAppointments={() => fetchAppointments(pagination.page, pagination.limit)}>
+    <AppointmentsProvider refresh={() => fetchAppointments(pagination.page, pagination.limit)}>
       <div className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -85,7 +85,6 @@ export default function AppointmentsPage() {
             pagination={pagination}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            isLoading={isLoading}
           />
         )}
       </div>

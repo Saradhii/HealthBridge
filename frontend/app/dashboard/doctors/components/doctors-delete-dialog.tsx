@@ -21,7 +21,7 @@ export function DoctorsDeleteDialog({
   currentRow,
 }: DoctorDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false)
-  const { refreshDoctors } = useDoctors()
+  const { refresh } = useDoctors()
 
   const handleDelete = async () => {
     if (isDeleting) return
@@ -30,7 +30,7 @@ export function DoctorsDeleteDialog({
     try {
       await apiClient.deleteUser(currentRow.id)
       onOpenChange(false)
-      refreshDoctors()
+      refresh()
       toast.success(`Dr. "${currentRow.name}" has been deleted successfully`)
     } catch (error) {
       console.error('Failed to delete doctor:', error)

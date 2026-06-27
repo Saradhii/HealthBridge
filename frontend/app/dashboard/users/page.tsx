@@ -5,7 +5,7 @@ import { UsersDialogs } from './components/users-dialogs'
 import { UsersPrimaryButtons } from './components/users-primary-buttons'
 import { UsersProvider } from './components/users-provider'
 import { UsersTable } from './components/users-table'
-import { UsersTableSkeleton } from './components/users-table-skeleton'
+import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
 import { type GetUsersResponse } from '@/lib/types'
 import { type User } from './data/schema'
@@ -72,7 +72,7 @@ export default function UsersPage() {
   }
 
   return (
-    <UsersProvider refreshUsers={() => fetchUsers(pagination.page, pagination.limit)}>
+    <UsersProvider refresh={() => fetchUsers(pagination.page, pagination.limit)}>
       <div className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -84,7 +84,7 @@ export default function UsersPage() {
           <UsersPrimaryButtons />
         </div>
         {isLoading ? (
-          <UsersTableSkeleton />
+          <DataTableSkeleton columns={6} />
         ) : error ? (
           <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
             <p className='text-destructive'>{error}</p>
@@ -95,7 +95,6 @@ export default function UsersPage() {
             pagination={pagination}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            isLoading={isLoading}
           />
         )}
       </div>

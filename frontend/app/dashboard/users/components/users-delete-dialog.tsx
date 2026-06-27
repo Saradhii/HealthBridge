@@ -21,7 +21,7 @@ export function UsersDeleteDialog({
   currentRow,
 }: UserDeleteDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false)
-  const { refreshUsers } = useUsers()
+  const { refresh } = useUsers()
 
   const handleDelete = async () => {
     if (isDeleting) return
@@ -30,7 +30,7 @@ export function UsersDeleteDialog({
     try {
       await apiClient.deleteUser(currentRow.id)
       onOpenChange(false)
-      refreshUsers()
+      refresh()
       toast.success(`User "${currentRow.name}" has been deleted successfully`)
     } catch (error) {
       console.error('Failed to delete user:', error)

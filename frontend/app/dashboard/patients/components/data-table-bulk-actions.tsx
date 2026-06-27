@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { type Table } from '@tanstack/react-table'
+import { type Row, type Table } from '@tanstack/react-table'
 import { Trash2, UserX, UserCheck } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
 import { type Patient } from '../data/schema'
+import { PatientMultiDeleteDialog } from './patient-delete-dialog'
 
 type DataTableBulkActionsProps<TData> = {
   table: Table<TData>
@@ -100,7 +101,11 @@ export function DataTableBulkActions<TData>({
         </Tooltip>
       </BulkActionsToolbar>
 
-      {/* TODO: Create patient-specific multi-delete dialog */}
+      <PatientMultiDeleteDialog
+        table={selectedRows as unknown as Row<Patient>[]}
+        open={showDeleteConfirm}
+        onOpenChange={setShowDeleteConfirm}
+      />
     </>
   )
 }

@@ -6,14 +6,14 @@ import { DoctorsInviteDialog } from './doctors-invite-dialog'
 import { useDoctors } from './doctors-provider'
 
 export function DoctorsDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow, refreshDoctors } = useDoctors()
+  const { open, setOpen, currentRow, setCurrentRow, refresh } = useDoctors()
   return (
     <>
       <DoctorsActionDialog
         key='doctor-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
-        onSuccess={refreshDoctors}
+        onSuccess={refresh}
       />
 
       <DoctorsInviteDialog
