@@ -7,6 +7,7 @@ import patientsRouter from './routes/patients';
 import appointmentsRouter from './routes/appointments';
 import wardsRouter from './routes/wards';
 import dashboardRouter from './routes/dashboard';
+import { errorHandler, notFoundHandler } from './middleware/error';
 
 type Bindings = {
   DATABASE_URL: string;
@@ -45,5 +46,8 @@ app.route('/api/patients', patientsRouter);
 app.route('/api/appointments', appointmentsRouter);
 app.route('/api/wards', wardsRouter);
 app.route('/api/dashboard', dashboardRouter);
+
+app.notFound(notFoundHandler);
+app.onError(errorHandler);
 
 export default app;
