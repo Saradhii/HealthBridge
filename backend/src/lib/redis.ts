@@ -63,3 +63,38 @@ export const getTenantKeys = async (tenantId: string, pattern: string): Promise<
   const fullPattern = getTenantRedisKey(tenantId, pattern);
   return await redis.keys(fullPattern);
 };
+
+// ===== Login rate limiting =====
+
+const LOGIN_MAX_ATTEMPTS = 10;
+const LOGIN_WINDOW_SECONDS = 15 * 60;
+
+const loginAttemptKey = (email: string, ip: string): string =>
+  `login-attempts:${email.toLowerCase()}:${ip}`;
+
+// Returns true if the email+IP pair has exceeded the allowed login attempts.
+// Fails OPEN (returns false) if Redis is unavailable so logins are never blocked
+// by an infrastructure outage.
+export const isLoginRateLimited = async (email: string, ip: string): Promise<boolean> => {
+  try {
+    const attempts = await redis.get<number>(loginAttemptKey(email, ip));
+    return attempts !== null && Number(attempts) >= LOGIN_MAX_ATTEMPTS;
+  } catch (err) {
+    console.error('Login rate-limit check failed, allowing request:', err);
+    return false;
+  }
+};
+
+// Records a failed login attempt within a fixed window. Best-effort: Redis errors
+// are swallowed so authentication keeps working.
+export const recordFailedLogin = async (email: string, ip: string): Promise<void> => {
+  try {
+    const key = loginAttemptKey(email, ip);
+    const attempts = await redis.incr(key);
+    if (attempts === 1) {
+      await redis.expire(key, LOGIN_WINDOW_SECONDS);
+    }
+  } catch (err) {
+    console.error('Failed to record login attempt:', err);
+  }
+};

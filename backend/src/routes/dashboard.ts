@@ -2,12 +2,15 @@ import { Hono } from 'hono';
 import { eq, and, gte, lte, sql, desc } from 'drizzle-orm';
 import { db } from '../db';
 import { patients, appointments, wards, patientStays, users } from '../db/schema';
-import { tenantMiddleware } from '../auth';
+import { tenantMiddleware, requirePermission } from '../auth';
 import type { AppContext } from '../auth/types';
 
 const dashboardRouter = new Hono<AppContext>();
 
 dashboardRouter.use('/*', tenantMiddleware);
+// Hospital-wide stats are sensitive; gate behind a permission every staff role
+// that should see dashboards already holds.
+dashboardRouter.use('/*', requirePermission('PATIENT', 'READ'));
 
 // GET /api/dashboard/stats - Get dashboard overview statistics
 dashboardRouter.get('/stats', async (c) => {

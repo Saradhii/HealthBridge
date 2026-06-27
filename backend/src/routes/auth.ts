@@ -3,15 +3,15 @@ import { eq, and, isNull } from 'drizzle-orm';
 import { db } from '../db';
 import { users, tenants, refreshTokens, passwordResetTokens, roles, userRoles } from '../db/schema';
 import { hashPassword, verifyPassword } from '../lib/password';
-import { generateAccessToken, generateRefreshToken, generateRefreshTokenString, verifyRefreshToken } from '../lib/jwt';
+import { generateAccessToken, generateRefreshTokenString, verifyAccessToken } from '../lib/jwt';
 import { addToPasswordHistory, checkPasswordHistory } from '../lib/password-history';
 import { getUserPermissions } from '../auth';
 import type { AppContext } from '../auth/types';
 import { sendPasswordResetEmail } from '../lib/email';
+import { isLoginRateLimited, recordFailedLogin } from '../lib/redis';
 import { REFRESH_TOKEN_TTL_MS, RESET_TOKEN_TTL_MS } from '../lib/constants';
 import {
   registerHospitalSchema,
-  signupSchema,
   loginSchema,
   refreshTokenSchema,
   forgotPasswordSchema,
@@ -102,26 +102,19 @@ auth.post('/register-hospital', async (c) => {
   const refreshTokenString = generateRefreshTokenString();
   const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
-  const [refreshTokenRecord] = await db
+  await db
     .insert(refreshTokens)
     .values({
       userId: admin.id,
       token: refreshTokenString,
       expiresAt,
-    })
-    .returning();
+    });
 
   const accessToken = generateAccessToken({
     userId: admin.id,
     tenantId: tenant.id,
     roles: ['hospital_admin'],
     permissions,
-  });
-
-  generateRefreshToken({
-    userId: admin.id,
-    tenantId: tenant.id,
-    tokenId: refreshTokenRecord.id,
   });
 
   return c.json({
@@ -136,80 +129,19 @@ auth.post('/register-hospital', async (c) => {
   }, 201);
 });
 
-auth.post('/signup', async (c) => {
-  const body = await c.req.json();
-  const validatedData = signupSchema.parse(body);
-
-  const authHeader = c.req.header('Authorization');
-  if (!authHeader) {
-    return c.json({ error: 'No authorization token provided' }, 401);
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-  const decoded = verifyRefreshToken(token);
-
-  if (!decoded) {
-    return c.json({ error: 'Invalid token' }, 401);
-  }
-
-  const existingUser = await db.query.users.findFirst({
-    where: and(
-      eq(users.email, validatedData.email),
-      eq(users.tenantId, decoded.tenantId)
-    ),
-  });
-
-  if (existingUser) {
-    return c.json({ error: 'User already exists' }, 400);
-  }
-
-  const role = await db.query.roles.findFirst({
-    where: and(
-      eq(roles.slug, validatedData.roleSlug),
-      eq(roles.isSystemRole, true)
-    ),
-  });
-
-  if (!role) {
-    return c.json({ error: 'Invalid role' }, 400);
-  }
-
-  const hashedPassword = await hashPassword(validatedData.password);
-
-  const [newUser] = await db
-    .insert(users)
-    .values({
-      tenantId: decoded.tenantId,
-      email: validatedData.email,
-      password: hashedPassword,
-      name: validatedData.name,
-      department: validatedData.department,
-      specialization: validatedData.specialization,
-      shift: validatedData.shift,
-    })
-    .returning({
-      id: users.id,
-      email: users.email,
-      name: users.name,
-      department: users.department,
-      specialization: users.specialization,
-      shift: users.shift,
-      tenantId: users.tenantId,
-    });
-
-  await addToPasswordHistory(newUser.id, hashedPassword);
-
-  await db.insert(userRoles).values({
-    userId: newUser.id,
-    roleId: role.id,
-  });
-
-  return c.json({ user: { ...newUser, roles: [validatedData.roleSlug] } }, 201);
-});
-
 auth.post('/login', async (c) => {
   const body = await c.req.json();
   const validatedData = loginSchema.parse(body);
+
+  const clientIp =
+    c.req.header('cf-connecting-ip') ||
+    c.req.header('x-forwarded-for') ||
+    'unknown';
+
+  // Throttle brute-force attempts per email + IP. Fails open on Redis errors.
+  if (await isLoginRateLimited(validatedData.email, clientIp)) {
+    return c.json({ error: 'Too many login attempts. Please try again later.' }, 429);
+  }
 
   // NOTE: multi-tenant limitation - users are looked up by email only because the
   // login contract sends just email + password. If the same email exists across
@@ -220,6 +152,7 @@ auth.post('/login', async (c) => {
   });
 
   if (!user) {
+    await recordFailedLogin(validatedData.email, clientIp);
     return c.json({ error: 'Invalid credentials' }, 401);
   }
 
@@ -230,6 +163,7 @@ auth.post('/login', async (c) => {
   const isValidPassword = await verifyPassword(validatedData.password, user.password);
 
   if (!isValidPassword) {
+    await recordFailedLogin(validatedData.email, clientIp);
     return c.json({ error: 'Invalid credentials' }, 401);
   }
 
@@ -259,26 +193,19 @@ auth.post('/login', async (c) => {
   const refreshTokenString = generateRefreshTokenString();
   const expiresAt = new Date(Date.now() + REFRESH_TOKEN_TTL_MS);
 
-  const [refreshTokenRecord] = await db
+  await db
     .insert(refreshTokens)
     .values({
       userId: user.id,
       token: refreshTokenString,
       expiresAt,
-    })
-    .returning();
+    });
 
   const accessToken = generateAccessToken({
     userId: user.id,
     tenantId: user.tenantId,
     roles: roleSlugs,
     permissions,
-  });
-
-  generateRefreshToken({
-    userId: user.id,
-    tenantId: user.tenantId,
-    tokenId: refreshTokenRecord.id,
   });
 
   return c.json({
@@ -449,7 +376,7 @@ auth.post('/change-password', async (c) => {
   }
 
   const token = authHeader.replace('Bearer ', '');
-  const decoded = verifyRefreshToken(token);
+  const decoded = verifyAccessToken(token);
 
   if (!decoded) {
     return c.json({ error: 'Invalid token' }, 401);

@@ -5,7 +5,7 @@ import { db } from '../db';
 import { users, userRoles, roles } from '../db/schema';
 import { tenantMiddleware, requirePermission } from '../auth';
 import type { AppContext } from '../auth/types';
-import { hashPassword } from '../lib/password';
+import { hashPassword, generateTempPassword } from '../lib/password';
 import { getPaginationParams, buildPagination } from '../lib/pagination';
 import { serializeUser } from '../lib/serialize';
 
@@ -221,8 +221,10 @@ usersRouter.post('/', requirePermission('USER', 'CREATE'), async (c) => {
     return c.json({ error: 'Email already exists in this hospital' }, 400);
   }
 
-  // Generate a temporary password (in production, you'd send this via email)
-  const tempPassword = Math.random().toString(36).slice(-8);
+  // Generate a temporary password with a CSPRNG. The new user must change it on
+  // first login.
+  // TODO: deliver via email once a provider is configured; stop returning in response body
+  const tempPassword = generateTempPassword();
   const hashedPassword = await hashPassword(tempPassword);
 
   // Create user with roles
@@ -239,7 +241,8 @@ usersRouter.post('/', requirePermission('USER', 'CREATE'), async (c) => {
         shift: data.shift,
         isActive: data.isActive,
         emailVerified: data.emailVerified,
-        forcePasswordChange: data.forcePasswordChange,
+        // Force a password change since the account is created with a temp password.
+        forcePasswordChange: true,
       })
       .returning();
 

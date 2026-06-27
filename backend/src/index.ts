@@ -18,7 +18,20 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.use('/*', cors());
+// CORS restricted to the configured frontend origin (plus localhost for dev).
+// Bindings are per-request on Workers, so the allow-list is built inside the
+// middleware from c.env.
+app.use('/*', (c, next) => {
+  const allowedOrigins = [c.env.FRONTEND_URL, 'http://localhost:3000'].filter(
+    (origin): origin is string => Boolean(origin)
+  );
+  return cors({
+    origin: (origin) => (allowedOrigins.includes(origin) ? origin : null),
+    credentials: true,
+    allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowHeaders: ['Content-Type', 'Authorization'],
+  })(c, next);
+});
 
 app.use('/*', async (c, next) => {
   const bindings: Record<string, string | undefined> = {
