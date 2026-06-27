@@ -16,6 +16,18 @@ export interface Tenant {
   slug: string;
 }
 
+export interface CurrentUser {
+  id: string;
+  email: string;
+  name: string;
+  department: string | null;
+  specialization: string | null;
+  shift: string | null;
+  tenantId?: string;
+  forcePasswordChange: boolean;
+  roles: Array<{ id?: string; name: string; slug: string }>;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -255,12 +267,13 @@ export interface AppointmentFromDB {
   id: string;
   tenantId: string;
   patientId: string;
-  appointmentDate: Date;
+  // ISO date strings over the wire; callers convert to Date as needed.
+  appointmentDate: string;
   status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
   type: 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic';
   notes: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   patient: {
     id: string;
     firstName: string;

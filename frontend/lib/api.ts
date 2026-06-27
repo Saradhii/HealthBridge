@@ -43,18 +43,34 @@ import type {
   DashboardStats,
   MonthlyStatsResponse,
   RecentAdmissionsResponse,
+  CurrentUser,
 } from './types';
 import { useAuthStore } from './store/auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
+type QueryParams = Record<string, string | number | boolean | undefined>;
+
+type StatusError = Error & { status?: number };
+
 class ApiClient {
   private baseUrl: string;
-  private isRefreshing = false;
-  private refreshPromise: Promise<{ accessToken: string }> | null = null;
+  private refreshPromise: Promise<string> | null = null;
 
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
+  }
+
+  /** Builds a `?key=value` query string, skipping empty/undefined values. */
+  private buildQuery(params?: QueryParams): string {
+    if (!params) return '';
+    const queryParams = new URLSearchParams();
+    for (const [key, value] of Object.entries(params)) {
+      if (value === undefined || value === '' || value === 0) continue;
+      queryParams.append(key, String(value));
+    }
+    const queryString = queryParams.toString();
+    return queryString ? `?${queryString}` : '';
   }
 
   private async request<T>(
@@ -80,9 +96,11 @@ class ApiClient {
       const data = await response.json();
 
       if (!response.ok) {
-        const error = new Error((data as ApiError).error || 'An error occurred');
+        const error: StatusError = new Error(
+          (data as ApiError).error || 'An error occurred'
+        );
         // Attach status code to error for better handling
-        (error as any).status = response.status;
+        error.status = response.status;
         throw error;
       }
 
@@ -125,104 +143,60 @@ class ApiClient {
     });
   }
 
-  private async refreshAccessToken(): Promise<{ accessToken: string }> {
-    const refreshToken = useAuthStore.getState().refreshToken;
+  private requestWithToken<T>(
+    endpoint: string,
+    options: RequestInit,
+    token: string
+  ): Promise<T> {
+    return this.request<T>(endpoint, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  }
 
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
+  /**
+   * Refreshes the access token, delegating to the single refresh implementation
+   * in the auth store. Concurrent callers share one in-flight refresh.
+   */
+  private refreshAccessToken(): Promise<string> {
+    if (!this.refreshPromise) {
+      this.refreshPromise = useAuthStore
+        .getState()
+        .refreshAccessToken()
+        .finally(() => {
+          this.refreshPromise = null;
+        });
     }
-
-    try {
-      const response = await this.request<{ accessToken: string }>('/api/auth/refresh', {
-        method: 'POST',
-        body: JSON.stringify({ refreshToken }),
-      });
-
-      // Update the access token in the store
-      useAuthStore.getState().setTokens(
-        response.accessToken,
-        refreshToken,
-        useAuthStore.getState().user!
-      );
-
-      return response;
-    } catch (error) {
-      // Refresh failed, clear auth state and logout
-      useAuthStore.getState().clearAuth();
-      throw error;
-    }
+    return this.refreshPromise;
   }
 
   private async authenticatedRequest<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
-    const authStore = useAuthStore.getState();
-    const { accessToken, refreshToken } = authStore;
+    const { accessToken, refreshToken } = useAuthStore.getState();
 
     if (!accessToken) {
       throw new Error('No access token found. Please login.');
     }
 
     try {
-      return await this.request<T>(endpoint, {
-        ...options,
-        headers: {
-          ...options.headers,
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      return await this.requestWithToken<T>(endpoint, options, accessToken);
     } catch (error) {
-      // Check if it's a 401 Unauthorized error (token expired/invalid)
-      const is401Error = error instanceof Error && (error as any).status === 401;
+      const is401Error =
+        error instanceof Error && (error as StatusError).status === 401;
 
-      if (is401Error) {
-        // If we're already refreshing, wait for that to complete
-        if (this.isRefreshing && this.refreshPromise) {
-          await this.refreshPromise;
-          // Retry the request with new token
-          const newAccessToken = useAuthStore.getState().accessToken;
-          if (newAccessToken) {
-            return this.request<T>(endpoint, {
-              ...options,
-              headers: {
-                ...options.headers,
-                Authorization: `Bearer ${newAccessToken}`,
-              },
-            });
-          }
-        } else if (!this.isRefreshing && refreshToken) {
-          // Start refresh process
-          this.isRefreshing = true;
-          this.refreshPromise = this.refreshAccessToken();
-
-          try {
-            await this.refreshPromise;
-            // Retry the request with new token
-            const newAccessToken = useAuthStore.getState().accessToken;
-            if (newAccessToken) {
-              return this.request<T>(endpoint, {
-                ...options,
-                headers: {
-                  ...options.headers,
-                  Authorization: `Bearer ${newAccessToken}`,
-                },
-              });
-            }
-          } finally {
-            this.isRefreshing = false;
-            this.refreshPromise = null;
-          }
-        }
+      // Only attempt a single refresh-and-retry on auth failures.
+      if (!is401Error || !refreshToken) {
+        throw error;
       }
 
-      // If we get here, either we couldn't refresh or it was a different error
-      throw error;
+      const newAccessToken = await this.refreshAccessToken();
+      return this.requestWithToken<T>(endpoint, options, newAccessToken);
     }
-  }
-
-  setAuthToken(_token: string) {
-    this.request = this.request.bind(this);
   }
 
   // Role Management APIs
@@ -266,18 +240,9 @@ class ApiClient {
     isActive?: boolean;
     roleSlug?: string;
   }): Promise<GetUsersResponse> {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
-    if (params?.roleSlug) queryParams.append('roleSlug', params.roleSlug);
-
-    const queryString = queryParams.toString();
-    const endpoint = queryString ? `/api/users?${queryString}` : '/api/users';
-
-    return this.authenticatedRequest<GetUsersResponse>(endpoint);
+    return this.authenticatedRequest<GetUsersResponse>(
+      `/api/users${this.buildQuery(params)}`
+    );
   }
 
   async createUser(data: CreateUserRequest): Promise<CreateUserResponse> {
@@ -287,8 +252,8 @@ class ApiClient {
     });
   }
 
-  async getCurrentUser(): Promise<{ user: any }> {
-    return this.authenticatedRequest<{ user: any }>('/api/users/me');
+  async getCurrentUser(): Promise<{ user: CurrentUser }> {
+    return this.authenticatedRequest<{ user: CurrentUser }>('/api/users/me');
   }
 
   async updateCurrentUser(data: {
@@ -296,12 +261,12 @@ class ApiClient {
     department?: string | null;
     specialization?: string | null;
     shift?: string | null;
-  }): Promise<{ user: any }> {
+  }): Promise<{ user: CurrentUser }> {
     const userId = useAuthStore.getState().user?.id;
     if (!userId) {
       throw new Error('No user ID found');
     }
-    return this.authenticatedRequest<{ user: any }>(`/api/users/${userId}`, {
+    return this.authenticatedRequest<{ user: CurrentUser }>(`/api/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(data),
     });
@@ -313,23 +278,33 @@ class ApiClient {
     });
   }
 
-  async deleteUsers(ids: string[]): Promise<{ message: string; deletedCount: number; errors?: string[] }> {
-    const results = await Promise.allSettled(
-      ids.map(id => this.deleteUser(id))
+  /** Fans out single-delete calls and aggregates the settled results. */
+  private async deleteMany(
+    ids: string[],
+    deleteOne: (id: string) => Promise<unknown>,
+    entityName: string
+  ): Promise<{ message: string; deletedCount: number; errors?: string[] }> {
+    const results = await Promise.allSettled(ids.map((id) => deleteOne(id)));
+
+    const deleted = results.filter((result) => result.status === 'fulfilled');
+    const errors = results.filter(
+      (result): result is PromiseRejectedResult => result.status === 'rejected'
     );
 
-    const deleted = results.filter(result => result.status === 'fulfilled');
-    const errors = results.filter(result => result.status === 'rejected');
-
     if (deleted.length === 0) {
-      throw new Error('Failed to delete any users');
+      throw new Error(`Failed to delete any ${entityName}s`);
     }
 
     return {
-      message: `Successfully deleted ${deleted.length} user${deleted.length > 1 ? 's' : ''}`,
+      message: `Successfully deleted ${deleted.length} ${entityName}${deleted.length > 1 ? 's' : ''}`,
       deletedCount: deleted.length,
-      errors: errors.length > 0 ? errors.map(e => (e as PromiseRejectedResult).reason.message) : undefined
+      errors:
+        errors.length > 0 ? errors.map((e) => e.reason.message) : undefined,
     };
+  }
+
+  async deleteUsers(ids: string[]): Promise<{ message: string; deletedCount: number; errors?: string[] }> {
+    return this.deleteMany(ids, (id) => this.deleteUser(id), 'user');
   }
 
   async getPatients(params?: {
@@ -342,21 +317,9 @@ class ApiClient {
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }): Promise<GetPatientsResponse> {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.gender) queryParams.append('gender', params.gender);
-    if (params?.bloodGroup) queryParams.append('bloodGroup', params.bloodGroup);
-    if (params?.isActive !== undefined) queryParams.append('isActive', params.isActive.toString());
-    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-
-    const queryString = queryParams.toString();
-    const endpoint = queryString ? `/api/patients?${queryString}` : '/api/patients';
-
-    return this.authenticatedRequest<GetPatientsResponse>(endpoint);
+    return this.authenticatedRequest<GetPatientsResponse>(
+      `/api/patients${this.buildQuery(params)}`
+    );
   }
 
   async getPatient(id: string): Promise<GetPatientResponse> {
@@ -384,22 +347,7 @@ class ApiClient {
   }
 
   async deletePatients(ids: string[]): Promise<{ message: string; deletedCount: number; errors?: string[] }> {
-    const results = await Promise.allSettled(
-      ids.map(id => this.deletePatient(id))
-    );
-
-    const deleted = results.filter(result => result.status === 'fulfilled');
-    const errors = results.filter(result => result.status === 'rejected');
-
-    if (deleted.length === 0) {
-      throw new Error('Failed to delete any patients');
-    }
-
-    return {
-      message: `Successfully deleted ${deleted.length} patient${deleted.length > 1 ? 's' : ''}`,
-      deletedCount: deleted.length,
-      errors: errors.length > 0 ? errors.map(e => (e as PromiseRejectedResult).reason.message) : undefined
-    };
+    return this.deleteMany(ids, (id) => this.deletePatient(id), 'patient');
   }
 
   // Appointment Management APIs
@@ -414,22 +362,9 @@ class ApiClient {
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
   }): Promise<GetAppointmentsResponse> {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.type) queryParams.append('type', params.type);
-    if (params?.dateFrom) queryParams.append('dateFrom', params.dateFrom);
-    if (params?.dateTo) queryParams.append('dateTo', params.dateTo);
-    if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
-    if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-
-    const queryString = queryParams.toString();
-    const endpoint = queryString ? `/api/appointments?${queryString}` : '/api/appointments';
-
-    return this.authenticatedRequest<GetAppointmentsResponse>(endpoint);
+    return this.authenticatedRequest<GetAppointmentsResponse>(
+      `/api/appointments${this.buildQuery(params)}`
+    );
   }
 
   async getAppointment(id: string): Promise<GetAppointmentResponse> {
@@ -464,18 +399,9 @@ class ApiClient {
     floor?: string;
     department?: string;
   }): Promise<GetWardsResponse> {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.floor) queryParams.append('floor', params.floor);
-    if (params?.department) queryParams.append('department', params.department);
-
-    const queryString = queryParams.toString();
-    const endpoint = queryString ? `/api/wards?${queryString}` : '/api/wards';
-
-    return this.authenticatedRequest<GetWardsResponse>(endpoint);
+    return this.authenticatedRequest<GetWardsResponse>(
+      `/api/wards${this.buildQuery(params)}`
+    );
   }
 
   async getWard(id: string): Promise<GetWardResponse> {
