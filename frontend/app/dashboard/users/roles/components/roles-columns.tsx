@@ -3,7 +3,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { useRouter } from 'next/navigation'
 import { MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {

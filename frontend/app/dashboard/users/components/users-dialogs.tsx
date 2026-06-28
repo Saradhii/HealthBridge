@@ -6,14 +6,14 @@ import { UsersInviteDialog } from './users-invite-dialog'
 import { useUsers } from './users-provider'
 
 export function UsersDialogs() {
-  const { open, setOpen, currentRow, setCurrentRow, refreshUsers } = useUsers()
+  const { open, setOpen, currentRow, setCurrentRow, refresh } = useUsers()
   return (
     <>
       <UsersActionDialog
         key='user-add'
         open={open === 'add'}
         onOpenChange={() => setOpen('add')}
-        onSuccess={refreshUsers}
+        onSuccess={refresh}
       />
 
       <UsersInviteDialog

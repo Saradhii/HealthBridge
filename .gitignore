@@ -7,9 +7,11 @@
 ehthumbs.db
 Thumbs.db
 
-# IDE files
+# IDE and local tooling
 .vscode/
 .idea/
+.grok/
+.wrangler/
 *.swp
 *.swo
 *~
@@ -49,3 +51,4 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+.vercel

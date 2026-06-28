@@ -113,22 +113,13 @@ export function UsersActionDialog({
       shift: values.shift || null,
     }
 
-    // Debug logging to verify role IDs
-    console.log('Form values being submitted:', {
-      ...payload,
-      roleIds: payload.roleIds,
-      roleIdsType: payload.roleIds.map(id => typeof id),
-    })
-
     try {
       if (isEdit && currentRow) {
         // TODO: Implement update user functionality
-        console.log('Update user:', payload)
         setSuccessMessage('User updated successfully!')
       } else {
         // Create new user
         const response = await apiClient.createUser(payload)
-        console.log('Created user:', response)
 
         // Show success message with temporary password
         setSuccessMessage(

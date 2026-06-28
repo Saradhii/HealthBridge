@@ -46,7 +46,6 @@ export function WardsProvider({
   )
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 export const useWards = () => {
   const wardsContext = React.useContext(WardsContext)
 

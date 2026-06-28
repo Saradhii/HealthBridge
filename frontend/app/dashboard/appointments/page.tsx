@@ -7,7 +7,7 @@ import { AppointmentsProvider } from './components/appointments-provider'
 import { AppointmentsTable } from './components/appointments-table'
 import { AppointmentsTableSkeleton } from './components/appointments-table-skeleton'
 import { apiClient } from '@/lib/api'
-import { type AppointmentFromDB, type GetAppointmentsResponse } from '@/lib/types'
+import { type GetAppointmentsResponse } from '@/lib/types'
 import { type Appointment } from './data/schema'
 
 export default function AppointmentsPage() {
@@ -62,7 +62,7 @@ export default function AppointmentsPage() {
   }
 
   return (
-    <AppointmentsProvider refreshAppointments={() => fetchAppointments(pagination.page, pagination.limit)}>
+    <AppointmentsProvider refresh={() => fetchAppointments(pagination.page, pagination.limit)}>
       <div className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -85,7 +85,6 @@ export default function AppointmentsPage() {
             pagination={pagination}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            isLoading={isLoading}
           />
         )}
       </div>

@@ -28,7 +28,7 @@ export function AppointmentsDeleteDialog({
   open,
   onOpenChange,
 }: AppointmentsDeleteDialogProps) {
-  const { refreshAppointments } = useAppointments()
+  const { refresh } = useAppointments()
   const [isDeleting, setIsDeleting] = useState(false)
 
   const handleDelete = async () => {
@@ -36,7 +36,7 @@ export function AppointmentsDeleteDialog({
       setIsDeleting(true)
       await apiClient.deleteAppointment(currentRow.id)
       toast.success('Appointment deleted successfully')
-      refreshAppointments()
+      refresh()
       onOpenChange(false)
     } catch (error) {
       toast.error('Failed to delete appointment')

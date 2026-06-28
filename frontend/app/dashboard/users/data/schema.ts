@@ -12,11 +12,6 @@ const roleSchema = z.object({
   slug: z.string(),
 })
 
-const roleWithStringIdSchema = z.union([
-  z.string(),
-  roleSchema
-])
-
 const userSchema = z.object({
   id: z.string(),
   email: z.string(),

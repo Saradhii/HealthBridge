@@ -1,5 +1,5 @@
 import { pgTable, uuid, varchar, timestamp, boolean, text, jsonb, unique, integer } from 'drizzle-orm/pg-core';
-import { tenantStatusEnum, genderEnum, bloodGroupEnum, appointmentStatusEnum, roomStatusEnum, bedTypeEnum } from './enums';
+import { tenantStatusEnum, genderEnum, bloodGroupEnum, appointmentStatusEnum, roomStatusEnum, bedTypeEnum, prescriptionStatusEnum, labResultStatusEnum, procedureStatusEnum } from './enums';
 
 export const tenants = pgTable('tenants', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -154,6 +154,54 @@ export const patientStays = pgTable('patient_stays', {
   updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
 });
 
+export const prescriptions = pgTable('prescriptions', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  patientId: uuid('patient_id').notNull().references(() => patients.id, { onDelete: 'cascade' }),
+  doctorId: uuid('doctor_id').notNull().references(() => users.id),
+  diagnosis: text('diagnosis'),
+  items: jsonb('items').$type<Array<{ name: string; dosage: string; frequency: string; duration: string; instructions?: string }>>().default([]),
+  notes: text('notes'),
+  status: prescriptionStatusEnum('status').notNull().default('active'),
+  issuedDate: timestamp('issued_date').notNull().defaultNow(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const labResults = pgTable('lab_results', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  patientId: uuid('patient_id').notNull().references(() => patients.id, { onDelete: 'cascade' }),
+  orderedById: uuid('ordered_by_id').notNull().references(() => users.id),
+  testName: varchar('test_name', { length: 255 }).notNull(),
+  category: varchar('category', { length: 100 }),
+  status: labResultStatusEnum('status').notNull().default('ordered'),
+  resultValue: varchar('result_value', { length: 255 }),
+  unit: varchar('unit', { length: 50 }),
+  referenceRange: varchar('reference_range', { length: 100 }),
+  notes: text('notes'),
+  orderedDate: timestamp('ordered_date').notNull().defaultNow(),
+  resultDate: timestamp('result_date'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
+export const procedures = pgTable('procedures', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  tenantId: uuid('tenant_id').notNull().references(() => tenants.id, { onDelete: 'cascade' }),
+  patientId: uuid('patient_id').notNull().references(() => patients.id, { onDelete: 'cascade' }),
+  performedById: uuid('performed_by_id').notNull().references(() => users.id),
+  name: varchar('name', { length: 255 }).notNull(),
+  category: varchar('category', { length: 100 }),
+  status: procedureStatusEnum('status').notNull().default('scheduled'),
+  scheduledDate: timestamp('scheduled_date').notNull(),
+  completedDate: timestamp('completed_date'),
+  outcome: text('outcome'),
+  notes: text('notes'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow().$onUpdate(() => new Date()),
+});
+
 // Type exports
 export type Tenant = typeof tenants.$inferSelect;
 export type NewTenant = typeof tenants.$inferInsert;
@@ -179,3 +227,9 @@ export type Room = typeof rooms.$inferSelect;
 export type NewRoom = typeof rooms.$inferInsert;
 export type PatientStay = typeof patientStays.$inferSelect;
 export type NewPatientStay = typeof patientStays.$inferInsert;
+export type Prescription = typeof prescriptions.$inferSelect;
+export type NewPrescription = typeof prescriptions.$inferInsert;
+export type LabResult = typeof labResults.$inferSelect;
+export type NewLabResult = typeof labResults.$inferInsert;
+export type Procedure = typeof procedures.$inferSelect;
+export type NewProcedure = typeof procedures.$inferInsert;

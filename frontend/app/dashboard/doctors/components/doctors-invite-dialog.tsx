@@ -24,7 +24,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { doctorRole } from '../data/data'
 
 const formSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -56,9 +55,8 @@ export function DoctorsInviteDialog({
     },
   })
 
-  const onSubmit = (values: DoctorInviteForm) => {
+  const onSubmit = () => {
     form.reset()
-    console.log('Invited doctor:', { ...values, role: 'doctor' })
     onOpenChange(false)
   }
 

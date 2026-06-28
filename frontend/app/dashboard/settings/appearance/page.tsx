@@ -1,21 +1,15 @@
 'use client'
 
-import { Palette } from 'lucide-react'
-import { ComingSoon } from '@/components/shared/coming-soon'
+import { ContentSection } from '../components/content-section'
+import { AppearanceForm } from '../components/appearance-form'
 
 export default function AppearancePage() {
-  const features = [
-    'Theme customization (Light/Dark mode)',
-    'Color scheme preferences',
-    'Font and display settings',
-  ]
-
   return (
-    <ComingSoon
+    <ContentSection
       title='Appearance'
-      description='Customize the appearance of your dashboard.'
-      icon={Palette}
-      features={features}
-    />
+      desc='Customize the appearance of your dashboard. Switch between light and dark themes.'
+    >
+      <AppearanceForm />
+    </ContentSection>
   )
 }

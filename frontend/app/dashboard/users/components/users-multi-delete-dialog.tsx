@@ -22,7 +22,7 @@ export function UsersMultiDeleteDialog<TData>({
   table,
 }: UserMultiDeleteDialogProps<TData>) {
   const [isDeleting, setIsDeleting] = useState(false)
-  const { refreshUsers } = useUsers()
+  const { refresh } = useUsers()
 
   const selectedRows = table.getFilteredSelectedRowModel().rows
 
@@ -36,7 +36,7 @@ export function UsersMultiDeleteDialog<TData>({
 
       onOpenChange(false)
       table.resetRowSelection()
-      refreshUsers()
+      refresh()
 
       toast.success(result.message)
 

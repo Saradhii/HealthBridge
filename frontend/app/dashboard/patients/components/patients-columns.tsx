@@ -9,6 +9,7 @@ import { LongText } from '@/components/long-text'
 import { callTypes } from '../data/data'
 import { type Patient } from '../data/schema'
 import { User2, User, Users } from 'lucide-react'
+import { DataTableRowActions } from './data-table-row-actions'
 
 function calculateAge(dateOfBirth: Date): number {
   const today = new Date()
@@ -185,5 +186,9 @@ export const patientsColumns: ColumnDef<Patient>[] = [
     },
     enableHiding: false,
     enableSorting: false,
+  },
+  {
+    id: 'actions',
+    cell: DataTableRowActions,
   },
 ]

@@ -4,4 +4,4 @@ compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat_v2"]
 
 [vars]
-FRONTEND_URL = "http://localhost:3000"
+FRONTEND_URL = "https://health-bridge.saradhi.dev"

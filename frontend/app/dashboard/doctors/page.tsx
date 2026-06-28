@@ -5,12 +5,13 @@ import { DoctorsDialogs } from './components/doctors-dialogs'
 import { DoctorsPrimaryButtons } from './components/doctors-primary-buttons'
 import { DoctorsProvider } from './components/doctors-provider'
 import { DoctorsTable } from './components/doctors-table'
-import { DoctorsTableSkeleton } from './components/doctors-table-skeleton'
+import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
-import { type User, type GetUsersResponse } from '@/lib/types'
+import { type GetUsersResponse } from '@/lib/types'
+import { type User } from './data/schema'
 
 export default function DoctorsPage() {
-  const [doctors, setDoctors] = useState<any[]>([])
+  const [doctors, setDoctors] = useState<User[]>([])
   const [pagination, setPagination] = useState<GetUsersResponse['pagination']>({
     page: 1,
     limit: 10,
@@ -31,17 +32,21 @@ export default function DoctorsPage() {
         roleSlug: 'doctor', // Filter for doctors only
       })
 
-      // Transform API response to match UI schema
+      // Transform API response to match UI schema (doctors are a filtered users view)
       const transformedDoctors: User[] = response.users.map((user) => ({
         id: user.id,
         email: user.email,
         name: user.name,
-        department: user.department || undefined,
-        specialization: user.specialization || undefined,
-        shift: user.shift || undefined,
-        tenantId: '', // Default empty string for now
-        roles: user.roles?.map(role => role.name || role.slug || '') || [],
+        department: user.department,
+        specialization: user.specialization,
+        shift: user.shift,
+        isActive: user.isActive,
+        emailVerified: user.emailVerified,
         forcePasswordChange: user.forcePasswordChange,
+        createdAt: new Date(user.createdAt),
+        updatedAt: new Date(user.updatedAt),
+        roles: user.roles,
+        status: user.isActive ? ('active' as const) : ('inactive' as const),
       }))
 
       setDoctors(transformedDoctors)
@@ -67,7 +72,7 @@ export default function DoctorsPage() {
   }
 
   return (
-    <DoctorsProvider refreshDoctors={() => fetchDoctors(pagination.page, pagination.limit)}>
+    <DoctorsProvider refresh={() => fetchDoctors(pagination.page, pagination.limit)}>
       <div className='flex flex-1 flex-col gap-4 sm:gap-6'>
         <div className='flex flex-wrap items-end justify-between gap-2'>
           <div>
@@ -79,7 +84,7 @@ export default function DoctorsPage() {
           <DoctorsPrimaryButtons />
         </div>
         {isLoading ? (
-          <DoctorsTableSkeleton />
+          <DataTableSkeleton columns={7} />
         ) : error ? (
           <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
             <p className='text-destructive'>{error}</p>
@@ -90,7 +95,6 @@ export default function DoctorsPage() {
             pagination={pagination}
             onPageChange={handlePageChange}
             onPageSizeChange={handlePageSizeChange}
-            isLoading={isLoading}
           />
         )}
       </div>

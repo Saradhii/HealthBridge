@@ -42,16 +42,9 @@ export function DataTableFacetedFilter<TData, TValue>({
   const [open, setOpen] = React.useState(false)
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(isOpen) => {
-        console.log(`🔄 Popover "${title}" state change:`, isOpen ? 'OPENING' : 'CLOSING')
-        setOpen(isOpen)
-      }}
-    >
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          onClick={() => console.log(`🖱️ "${title}" button clicked`)}
           variant='outline'
           size='sm'
           className='h-8 border-dashed'

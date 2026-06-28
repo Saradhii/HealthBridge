@@ -1,5 +1,5 @@
 import { relations } from 'drizzle-orm';
-import { tenants, roles, users, userRoles, passwordHistory, refreshTokens, passwordResetTokens, patients, appointments, wards, rooms, patientStays } from './tables';
+import { tenants, roles, users, userRoles, passwordHistory, refreshTokens, passwordResetTokens, patients, appointments, wards, rooms, patientStays, prescriptions, labResults, procedures } from './tables';
 
 export const tenantsRelations = relations(tenants, ({ many }) => ({
   users: many(users),
@@ -8,6 +8,9 @@ export const tenantsRelations = relations(tenants, ({ many }) => ({
   appointments: many(appointments),
   wards: many(wards),
   patientStays: many(patientStays),
+  prescriptions: many(prescriptions),
+  labResults: many(labResults),
+  procedures: many(procedures),
 }));
 
 export const rolesRelations = relations(roles, ({ one, many }) => ({
@@ -27,6 +30,9 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   passwordHistory: many(passwordHistory),
   refreshTokens: many(refreshTokens),
   passwordResetTokens: many(passwordResetTokens),
+  prescriptions: many(prescriptions),
+  labResults: many(labResults),
+  procedures: many(procedures),
 }));
 
 export const userRolesRelations = relations(userRoles, ({ one }) => ({
@@ -68,6 +74,9 @@ export const patientsRelations = relations(patients, ({ one, many }) => ({
   }),
   appointments: many(appointments),
   patientStays: many(patientStays),
+  prescriptions: many(prescriptions),
+  labResults: many(labResults),
+  procedures: many(procedures),
 }));
 
 export const appointmentsRelations = relations(appointments, ({ one }) => ({
@@ -109,5 +118,50 @@ export const patientStaysRelations = relations(patientStays, ({ one }) => ({
   room: one(rooms, {
     fields: [patientStays.roomId],
     references: [rooms.id],
+  }),
+}));
+
+export const prescriptionsRelations = relations(prescriptions, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [prescriptions.tenantId],
+    references: [tenants.id],
+  }),
+  patient: one(patients, {
+    fields: [prescriptions.patientId],
+    references: [patients.id],
+  }),
+  doctor: one(users, {
+    fields: [prescriptions.doctorId],
+    references: [users.id],
+  }),
+}));
+
+export const labResultsRelations = relations(labResults, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [labResults.tenantId],
+    references: [tenants.id],
+  }),
+  patient: one(patients, {
+    fields: [labResults.patientId],
+    references: [patients.id],
+  }),
+  orderedBy: one(users, {
+    fields: [labResults.orderedById],
+    references: [users.id],
+  }),
+}));
+
+export const proceduresRelations = relations(procedures, ({ one }) => ({
+  tenant: one(tenants, {
+    fields: [procedures.tenantId],
+    references: [tenants.id],
+  }),
+  patient: one(patients, {
+    fields: [procedures.patientId],
+    references: [patients.id],
+  }),
+  performedBy: one(users, {
+    fields: [procedures.performedById],
+    references: [users.id],
   }),
 }));

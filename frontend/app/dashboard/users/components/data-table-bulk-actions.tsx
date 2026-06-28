@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { DataTableBulkActions as BulkActionsToolbar } from '@/components/data-table'
-import { type User } from '../data/schema'
 import { UsersMultiDeleteDialog } from './users-multi-delete-dialog'
 
 type DataTableBulkActionsProps<TData> = {
@@ -22,16 +21,13 @@ export function DataTableBulkActions<TData>({
   table,
 }: DataTableBulkActionsProps<TData>) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
-  const selectedRows = table.getFilteredSelectedRowModel().rows
 
   const handleBulkStatusChange = (status: 'active' | 'inactive') => {
-    const selectedUsers = selectedRows.map((row) => row.original as User)
     // TODO: Implement actual status change API call
     toast.info(`${status === 'active' ? 'Activate' : 'Deactivate'} user functionality not yet implemented`)
   }
 
   const handleBulkInvite = () => {
-    const selectedUsers = selectedRows.map((row) => row.original as User)
     // TODO: Implement actual invite API call
     toast.info('Bulk invite functionality not yet implemented')
   }

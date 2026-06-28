@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { LogoIcon } from '@/components/logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/password-input';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -14,7 +13,6 @@ import { useAuthStore } from '@/lib/store/auth';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Info } from 'lucide-react';
 import {
   Form,
   FormControl,
@@ -81,12 +79,6 @@ export default function SignInPage() {
                                 </Link>
                                 <h1 className="mb-1 mt-4 text-xl font-semibold">Sign In to Your Account</h1>
                                 <p>Welcome back! Please sign in to continue</p>
-                                <div className="mt-3 flex items-start gap-2 rounded-lg bg-blue-50 p-3 dark:bg-blue-950/20">
-                                    <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                                    <p className="text-xs text-muted-foreground leading-relaxed">
-                                        The backend is deployed on Render with a 50-second cold start delay. Please expect a delay on the first request.
-                                    </p>
-                                </div>
                             </div>
 
                             <div className="mt-6 space-y-6">

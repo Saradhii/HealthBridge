@@ -16,6 +16,18 @@ export interface Tenant {
   slug: string;
 }
 
+export interface CurrentUser {
+  id: string;
+  email: string;
+  name: string;
+  department: string | null;
+  specialization: string | null;
+  shift: string | null;
+  tenantId?: string;
+  forcePasswordChange: boolean;
+  roles: Array<{ id?: string; name: string; slug: string }>;
+}
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -255,12 +267,13 @@ export interface AppointmentFromDB {
   id: string;
   tenantId: string;
   patientId: string;
-  appointmentDate: Date;
+  // ISO date strings over the wire; callers convert to Date as needed.
+  appointmentDate: string;
   status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled' | 'no_show';
   type: 'consultation' | 'follow-up' | 'emergency' | 'checkup' | 'vaccination' | 'surgery' | 'therapy' | 'diagnostic';
   notes: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
   patient: {
     id: string;
     firstName: string;
@@ -312,6 +325,236 @@ export interface UpdateAppointmentResponse {
 
 export interface GetAppointmentResponse {
   appointment: AppointmentFromDB;
+}
+
+// Prescription Management Types
+export interface PrescriptionItem {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions?: string;
+}
+
+export interface PrescriptionFromDB {
+  id: string;
+  tenantId: string;
+  patientId: string;
+  doctorId: string;
+  diagnosis: string | null;
+  items: PrescriptionItem[];
+  notes: string | null;
+  status: 'active' | 'completed' | 'cancelled';
+  // ISO date strings over the wire; callers convert to Date as needed.
+  issuedDate: string;
+  createdAt: string;
+  updatedAt: string;
+  patient: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  doctor: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface GetPrescriptionsResponse {
+  prescriptions: PrescriptionFromDB[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+    totalPages: number;
+  };
+}
+
+export interface CreatePrescriptionRequest {
+  patientId: string;
+  doctorId?: string;
+  diagnosis?: string | null;
+  items: PrescriptionItem[];
+  notes?: string | null;
+  status?: 'active' | 'completed' | 'cancelled';
+  issuedDate?: string;
+}
+
+export interface UpdatePrescriptionRequest {
+  patientId?: string;
+  doctorId?: string;
+  diagnosis?: string | null;
+  items?: PrescriptionItem[];
+  notes?: string | null;
+  status?: 'active' | 'completed' | 'cancelled';
+  issuedDate?: string;
+}
+
+export interface CreatePrescriptionResponse {
+  prescription: PrescriptionFromDB;
+}
+
+export interface UpdatePrescriptionResponse {
+  prescription: PrescriptionFromDB;
+}
+
+export interface GetPrescriptionResponse {
+  prescription: PrescriptionFromDB;
+}
+
+// Lab Result Management Types
+export interface LabResultFromDB {
+  id: string;
+  tenantId: string;
+  patientId: string;
+  orderedById: string;
+  testName: string;
+  category: string | null;
+  status: 'ordered' | 'in_progress' | 'completed' | 'cancelled';
+  resultValue: string | null;
+  unit: string | null;
+  referenceRange: string | null;
+  notes: string | null;
+  // ISO date strings over the wire; callers convert to Date as needed.
+  orderedDate: string;
+  resultDate: string | null;
+  createdAt: string;
+  updatedAt: string;
+  patient: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  orderedBy: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface GetLabResultsResponse {
+  labResults: LabResultFromDB[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+    totalPages: number;
+  };
+}
+
+export interface CreateLabResultRequest {
+  patientId: string;
+  orderedById?: string;
+  testName: string;
+  category?: string | null;
+  status?: 'ordered' | 'in_progress' | 'completed' | 'cancelled';
+  resultValue?: string | null;
+  unit?: string | null;
+  referenceRange?: string | null;
+  notes?: string | null;
+  orderedDate?: string;
+  resultDate?: string | null;
+}
+
+export interface UpdateLabResultRequest {
+  patientId?: string;
+  orderedById?: string;
+  testName?: string;
+  category?: string | null;
+  status?: 'ordered' | 'in_progress' | 'completed' | 'cancelled';
+  resultValue?: string | null;
+  unit?: string | null;
+  referenceRange?: string | null;
+  notes?: string | null;
+  orderedDate?: string;
+  resultDate?: string | null;
+}
+
+export interface CreateLabResultResponse {
+  labResult: LabResultFromDB;
+}
+
+export interface UpdateLabResultResponse {
+  labResult: LabResultFromDB;
+}
+
+export interface GetLabResultResponse {
+  labResult: LabResultFromDB;
+}
+
+// Procedure Management Types
+export interface ProcedureFromDB {
+  id: string;
+  tenantId: string;
+  patientId: string;
+  performedById: string;
+  name: string;
+  category: string | null;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  // ISO date strings over the wire; callers convert to Date as needed.
+  scheduledDate: string;
+  completedDate: string | null;
+  outcome: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  patient: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  };
+  performedBy: {
+    id: string;
+    name: string;
+  };
+}
+
+export interface GetProceduresResponse {
+  procedures: ProcedureFromDB[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    hasMore: boolean;
+    totalPages: number;
+  };
+}
+
+export interface CreateProcedureRequest {
+  patientId: string;
+  performedById?: string;
+  name: string;
+  category?: string | null;
+  status?: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  scheduledDate: string;
+  completedDate?: string | null;
+  outcome?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateProcedureRequest {
+  patientId?: string;
+  performedById?: string;
+  name?: string;
+  category?: string | null;
+  status?: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  scheduledDate?: string;
+  completedDate?: string | null;
+  outcome?: string | null;
+  notes?: string | null;
+}
+
+export interface CreateProcedureResponse {
+  procedure: ProcedureFromDB;
+}
+
+export interface UpdateProcedureResponse {
+  procedure: ProcedureFromDB;
+}
+
+export interface GetProcedureResponse {
+  procedure: ProcedureFromDB;
 }
 
 // ===== WARDS & ROOMS =====
