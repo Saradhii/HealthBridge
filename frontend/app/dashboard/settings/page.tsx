@@ -6,6 +6,7 @@ import { ProfileForm } from './components/profile-form'
 import { apiClient } from '@/lib/api'
 import { useAuthStore } from '@/lib/store/auth'
 import { Skeleton } from '@/components/ui/skeleton'
+import { DataLoadError } from '@/components/data-load-error'
 
 export default function SettingsProfilePage() {
   const { user: authUser } = useAuthStore()
@@ -68,9 +69,7 @@ export default function SettingsProfilePage() {
         title='Profile'
         desc='Manage your personal information and preferences.'
       >
-        <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-          <p className='text-destructive'>{error}</p>
-        </div>
+        <DataLoadError />
       </ContentSection>
     )
   }
