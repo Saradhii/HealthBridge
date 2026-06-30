@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import { eq, and, or, ilike, desc, sql } from 'drizzle-orm';
@@ -227,11 +228,15 @@ usersRouter.post('/', requirePermission('USER', 'CREATE'), async (c) => {
   const tempPassword = generateTempPassword();
   const hashedPassword = await hashPassword(tempPassword);
 
-  // Create user with roles
-  const newUser = await db.transaction(async (tx) => {
-    const [user] = await tx
+  // Create user with roles atomically. The HTTP driver has no interactive
+  // transactions, so we generate the id up front and run both writes in a
+  // single db.batch() (executed as one transaction).
+  const userId = randomUUID();
+  const [createdUsers] = await db.batch([
+    db
       .insert(users)
       .values({
+        id: userId,
         tenantId,
         email: data.email,
         password: hashedPassword,
@@ -244,17 +249,12 @@ usersRouter.post('/', requirePermission('USER', 'CREATE'), async (c) => {
         // Force a password change since the account is created with a temp password.
         forcePasswordChange: true,
       })
-      .returning();
-
-    const roleAssignments = data.roleIds.map((roleId) => ({
-      userId: user.id,
-      roleId,
-    }));
-
-    await tx.insert(userRoles).values(roleAssignments);
-
-    return user;
-  });
+      .returning(),
+    db.insert(userRoles).values(
+      data.roleIds.map((roleId) => ({ userId, roleId }))
+    ),
+  ]);
+  const newUser = createdUsers[0];
 
   // Get the complete user with roles for response
   const createdUser = await db.query.users.findFirst({
@@ -375,19 +375,16 @@ usersRouter.put('/:id/roles', requirePermission('USER', 'UPDATE'), async (c) => 
     return c.json({ error: 'User not found' }, 404);
   }
 
-  // Update user roles in a transaction
-  await db.transaction(async (tx) => {
-    await tx
-      .delete(userRoles)
-      .where(eq(userRoles.userId, userId));
-
-    await tx.insert(userRoles).values(
+  // Replace the user's roles atomically (single transaction via db.batch).
+  await db.batch([
+    db.delete(userRoles).where(eq(userRoles.userId, userId)),
+    db.insert(userRoles).values(
       roleIds.map((roleId) => ({
         userId,
         roleId,
       }))
-    );
-  });
+    ),
+  ]);
 
   // Get the complete user with roles for response
   const userWithRoles = await db.query.users.findFirst({

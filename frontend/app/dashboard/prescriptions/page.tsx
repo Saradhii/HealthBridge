@@ -7,6 +7,7 @@ import { PrescriptionsProvider } from './components/prescriptions-provider'
 import { PrescriptionsTable } from './components/prescriptions-table'
 import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type GetPrescriptionsResponse } from '@/lib/types'
 import { type Prescription } from './data/schema'
 
@@ -73,9 +74,7 @@ export default function PrescriptionsPage() {
         {isLoading ? (
           <DataTableSkeleton columns={6} />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchPrescriptions(pagination.page, pagination.limit)} />
         ) : (
           <PrescriptionsTable
             data={prescriptions}

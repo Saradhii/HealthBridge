@@ -1,21 +1,31 @@
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { neon } from '@neondatabase/serverless';
 import * as schema from './schema';
 import { eq, and, count } from 'drizzle-orm';
 
+// HTTP (fetch-based) driver — chosen deliberately for Cloudflare Workers.
+//
+// The previous neon-serverless `Pool` keeps a long-lived WebSocket. On Workers
+// each request runs in its own I/O context, and a socket opened by one request
+// cannot be used by another ("Cannot perform I/O on behalf of a different
+// request"). Caching that pool across requests caused intermittent 500s under
+// the burst of concurrent calls that client-side navigation fires — while a
+// full page refresh (a fresh context) happened to work.
+//
+// neon-http is stateless: every query is an independent fetch, so a single
+// instance is safe to share across requests and concurrency. Interactive
+// transactions aren't supported by this driver; use db.batch([...]) instead.
 function createDb() {
-  return drizzle(new Pool({ connectionString: process.env.DATABASE_URL! }), { schema });
+  return drizzle(neon(process.env.DATABASE_URL!), { schema });
 }
 
 type DbType = ReturnType<typeof createDb>;
 
-let poolInstance: Pool | null = null;
 let dbInstance: DbType | null = null;
 
 function initDb(): DbType {
   if (!dbInstance) {
-    poolInstance = new Pool({ connectionString: process.env.DATABASE_URL! });
-    dbInstance = drizzle(poolInstance, { schema });
+    dbInstance = createDb();
   }
   return dbInstance;
 }
@@ -101,18 +111,10 @@ export async function countUsersInTenant(tenantId: string) {
   return result[0]?.count || 0;
 }
 
+// Retained for callers (e.g. seed scripts) that close out after running.
+// The HTTP driver holds no persistent connection, so there is nothing to tear
+// down — this is intentionally a no-op.
 export async function closeDbConnection() {
-  if (poolInstance) {
-    await poolInstance.end();
-    poolInstance = null;
-    dbInstance = null;
-  }
-}
-
-// Transaction helper
-export async function withTransaction<T>(
-  callback: (tx: any) => Promise<T>
-): Promise<T> {
-  return await db.transaction(callback);
+  dbInstance = null;
 }
 

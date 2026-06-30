@@ -7,6 +7,7 @@ import { LabResultsProvider } from './components/lab-results-provider'
 import { LabResultsTable } from './components/lab-results-table'
 import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type GetLabResultsResponse } from '@/lib/types'
 import { type LabResult } from './data/schema'
 
@@ -74,9 +75,7 @@ export default function LabResultsPage() {
         {isLoading ? (
           <DataTableSkeleton columns={6} />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchLabResults(pagination.page, pagination.limit)} />
         ) : (
           <LabResultsTable
             data={labResults}

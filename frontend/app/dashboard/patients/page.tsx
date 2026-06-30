@@ -7,6 +7,7 @@ import { PatientsProvider } from './components/patients-provider'
 import { PatientsTable } from './components/patients-table'
 import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type GetPatientsResponse } from '@/lib/types'
 import { type Patient } from './data/schema'
 
@@ -154,9 +155,7 @@ export default function PatientsPage() {
         {isLoading ? (
           <DataTableSkeleton columns={8} />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchPatients()} />
         ) : (
           <PatientsTable
             data={patients}

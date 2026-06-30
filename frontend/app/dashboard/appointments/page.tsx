@@ -6,6 +6,7 @@ import { AppointmentsPrimaryButtons } from './components/appointments-primary-bu
 import { AppointmentsProvider } from './components/appointments-provider'
 import { AppointmentsTable } from './components/appointments-table'
 import { AppointmentsTableSkeleton } from './components/appointments-table-skeleton'
+import { DataLoadError } from '@/components/data-load-error'
 import { apiClient } from '@/lib/api'
 import { type GetAppointmentsResponse } from '@/lib/types'
 import { type Appointment } from './data/schema'
@@ -76,9 +77,7 @@ export default function AppointmentsPage() {
         {isLoading ? (
           <AppointmentsTableSkeleton />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchAppointments(pagination.page, pagination.limit)} />
         ) : (
           <AppointmentsTable
             data={appointments}

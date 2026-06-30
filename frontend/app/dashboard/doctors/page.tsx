@@ -7,6 +7,7 @@ import { DoctorsProvider } from './components/doctors-provider'
 import { DoctorsTable } from './components/doctors-table'
 import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type GetUsersResponse } from '@/lib/types'
 import { type User } from './data/schema'
 
@@ -86,9 +87,7 @@ export default function DoctorsPage() {
         {isLoading ? (
           <DataTableSkeleton columns={7} />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchDoctors(pagination.page, pagination.limit)} />
         ) : (
           <DoctorsTable
             data={doctors}

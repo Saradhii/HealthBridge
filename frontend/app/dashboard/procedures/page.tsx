@@ -7,6 +7,7 @@ import { ProceduresProvider } from './components/procedures-provider'
 import { ProceduresTable } from './components/procedures-table'
 import { DataTableSkeleton } from '@/components/data-table'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type GetProceduresResponse } from '@/lib/types'
 import { type Procedure } from './data/schema'
 
@@ -76,9 +77,7 @@ export default function ProceduresPage() {
         {isLoading ? (
           <DataTableSkeleton columns={6} />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={() => fetchProcedures(pagination.page, pagination.limit)} />
         ) : (
           <ProceduresTable
             data={procedures}

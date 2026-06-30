@@ -8,6 +8,7 @@ import { WardCard } from './components/ward-card'
 import { WardsSkeleton } from './components/wards-skeleton'
 import { type Ward } from './data/schema'
 import { apiClient } from '@/lib/api'
+import { DataLoadError } from '@/components/data-load-error'
 import { type WardFromDB } from '@/lib/types'
 
 export default function WardsPage() {
@@ -81,9 +82,7 @@ export default function WardsPage() {
         {isLoading ? (
           <WardsSkeleton />
         ) : error ? (
-          <div className='flex items-center justify-center rounded-md border border-destructive bg-destructive/10 p-8'>
-            <p className='text-destructive'>{error}</p>
-          </div>
+          <DataLoadError onRetry={fetchWards} />
         ) : wards.length === 0 ? (
           <div className='flex flex-1 items-center justify-center rounded-lg border border-dashed p-8 sm:p-12'>
             <div className='flex flex-col items-center gap-2 text-center'>
